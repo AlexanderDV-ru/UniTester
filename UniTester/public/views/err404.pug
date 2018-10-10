@@ -1,0 +1,14 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.error_404}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	h1 #{$msgs$.error_404}:
+	br
+	label #{$msgs$.thisPageNotExists}
+	br
+	label #{$msgs$.requestedPage}

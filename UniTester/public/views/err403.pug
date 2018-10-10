@@ -1,0 +1,14 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.error_403}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	h1 #{$msgs$.error_403}:
+	br
+	label #{$msgs$.youDontHavePermissionsToAccessToThisPage}
+	br
+	label #{$msgs$.requestedPage}

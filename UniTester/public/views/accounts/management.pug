@@ -1,0 +1,49 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.accountsManagement}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	table
+		tr
+			td
+				div#accounts(align="left")
+					select#accountsSelect(size=10)
+						- for(var v=0;v<data.accounts.length;v++)
+							option(ondblclick="document.location.href='/accounts/management/exists/" + data.accounts[v] + "'") #{data.accounts[v]}
+				script(type="text/javascript").
+					function resizeLists()
+					{
+						document.getElementById("accountsSelect").size = Math.max(10,
+								document.documentElement.clientHeight / 20 - 8);
+					}
+					window.addEventListener("load",resizeLists);
+					window.addEventListener("resize",resizeLists);
+			td
+				div#createAccount(align="center")
+					form(action="/accounts/management/create" method="post")
+						table
+							tr
+								td(align="right")
+									label #{$msgs$.login}
+								td(align="left")
+									input(type="text" name="login")
+							tr
+								td(align="right")
+									label #{$msgs$.password}
+								td(align="left")
+									input(type="password" name="password")
+							tr
+								td(align="right")
+									label #{$msgs$.groupsNames}
+								td(align="left")
+									textarea(name="groupsNames")
+							tr
+								td(align="right")
+									label #{$msgs$.perms}
+								td(align="left")
+									textarea(name="perms")
+						input(type="submit" value=$msgs$.createAccount)

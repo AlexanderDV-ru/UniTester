@@ -1,0 +1,37 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.formulaDescription}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+	
+block content
+	form(action="/workspace/utils/subjects/chemistry/formulaDescription" method="get")
+		table
+			tr
+				td(align="center" colspan=2)
+					label #{$msgs$.chemicalElementsLanguage}
+			tr
+				td(align="right")
+					input(type="radio" name="chemicalElementsLanguage" value="current" checked=(requestQuery.chemicalElementsLanguage==="current"?"checked":undefined))
+					label #{$msgs$.current}
+				td(align="left")
+					input(type="radio" name="chemicalElementsLanguage" value="latin" checked=(requestQuery.chemicalElementsLanguage!=="current"?"checked":undefined))
+					label #{$msgs$.latin}
+			tr
+				td(align="right")
+					label #{$msgs$.chemicalFormula}
+				td(align="left")
+					input(type="text" name="chemicalFormula" value=requestQuery.chemicalFormula oninput="this.value=this.value.replace(/0/g, '₀').replace(/1/g, '₁').replace(/2/g, '₂').replace(/3/g, '₃').replace(/4/g, '₄').replace(/5/g, '₅').replace(/6/g, '₆').replace(/7/g, '₇').replace(/8/g, '₈').replace(/9/g, '₉').replace(/[^₀₁₂₃₄₅₆₇₈₉A-Za-z()]+/g,'')")
+			tr
+				td(align="right")
+					label #{$msgs$.naming}
+				td(align="left")
+					input(type="text" name="naming" value=requestQuery.naming)
+			tr
+				td(align="center" colspan=2)
+					input(type="submit" value=$msgs$.getDescription)
+			tr
+				td(align="center" colspan=2)
+					textarea(style="width: 400px; height: 400px;") #{data.description}

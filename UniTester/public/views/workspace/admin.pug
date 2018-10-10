@@ -1,0 +1,10 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.adminWorkspace}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	a.greenButton(href="/accounts/management")  #{$msgs$.accountsManagement}

@@ -1,0 +1,31 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	margin: 0;
+}
+
+.nontexthref {
+	color: white;
+	text-decoration: none;
+}
+
+.borderedTable {
+	border-spacing: 0;
+	border-collapse: collapse;
+	border-color: #999;
+	border-style: solid;
+	border-width: 1px;
+	text-align: center;
+}
+
+.menuItem:not(:hover) > .menu > .menuItem {
+	display: none;
+}
+
+.menuItem:hover > .menu > .menuItem {
+	display: block;
+}

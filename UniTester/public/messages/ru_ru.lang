@@ -1,0 +1,94 @@
+'sitename': 'UniTester'
+'reloadpage': 'Перезагрузить страницу'
+'howToEnableJS': 'Как включить JavaScript'
+'jsDisabled': 'Ошибка: в вашем браузере выключен JavaScript!'
+'enableJsToUse': 'Для использования данного сайта вам необходимо включить JavaScript в настройках вашего браузера.'
+'findInYandex': 'Искать в Яндексе'
+'findInGoogle': 'Искать в Google'
+'signout': 'Выйти из аккаунта'
+'signin': 'Войти в аккаунт'
+'createAccount': 'Создать аккаунт'
+'accountsManagement': 'Управление аккаунтами'
+'changePassword': 'Изменить пароль'
+'passwordChanging': 'Изменение пароля'
+
+
+'login': 'Логин'
+'password': 'Пароль'
+
+'perms': 'Права'
+'groups': 'Группы'
+'groupsNames': 'Названия групп'
+
+'property': 'Свойство'
+'value': 'Значение'
+
+'markers': 'Метки'
+
+'externalNote': 'Внешнее примечание'
+'internalNote': 'Внутреннее примечание'
+'distributorNote': 'Примечание поставщика'
+
+'naming': 'Наименование'
+'minPrice': 'Минимальная цена'
+'manufacturer': 'Производитель'
+'distributor': 'Поставщик'
+'obliqueness': 'Отклонение'
+'inStock': 'В наличии'
+'expirationDate': 'Срок годности'
+'priceOfStateRegister': 'Цена госреестра'
+'price': 'Цена'
+'order': 'Заказ'
+'cost': 'Стоимость'
+'id': 'ID'
+
+'chemistryUtils': 'Химические утилиты'
+
+'checking': 'Проверка'
+'sending': 'Отправка'
+
+'enterOrderName': 'Введите название заказа'
+
+'createNewOrder': 'Создать новый заказ'
+
+'companyName': 'Название компании'
+'name': 'Название'
+'regions': 'Регионы'
+'sellingProductsTypes': 'Типы продаваемых продуктов'
+'consumptionProductsTypes': 'Типы сопутствующих продуктов'
+
+'error_workspaceWithAccessNotExists': 'Ошибка: рабочего пространства с доступом не существует!'
+'error_404': 'Ошибка 404'
+'error_403': 'Ошибка 403'
+'error_messageUndefined': 'Ошибка: сообщение '%0' не найдено!'
+
+
+'saveFieldEmptyToUseServerNameOfFormula': 'Оставьте поле пустым, чтобы использовать серверное название формулы'
+'chemicalFormula': 'Химическая формула'
+'naming': 'Название'
+'signsAfterComma': 'Знаков после запятой'
+'current': 'Данный'
+'latin': 'Латинский'
+'chemicalElementsLanguage': 'Язык названий хим. элементов: '
+'getDescription': 'Получить описание'
+
+'error_mustBeFormula': 'Ошибка, '%1' должно быть формулой химического вещества!'
+'error_indexLessThanOneErrorInFormula': 'Ошибка в формуле - индекс меньше 1 (%1 у %2)!'
+'error_inertGasCompoundErrorInFormula': 'Ошибка в формуле - соединение с инертным газом!'
+'error_notClosedBracketErrorInFormula': 'Ошибка в формуле - скобка не закрыта!'
+'error_wrongBracketOrderErrorInFormula': 'Ошибка в формуле - скобка закрывается раньше, чем закрывается!'
+
+'specificSubstance': 'Конкретное вещество - %1.'
+'qualitativeComposition': 'Качественный состав - состоит из %1 элементов: %2.'
+'substanceType': 'Тип вещества - %1.'
+'quantitativeComposition': 'Количественный состав вещества - %1.'
+'relativeMolecularMass': 'Относительная молекулярная масса - %1.'
+'elementsMassRatio': 'Соотношение масс элементов - %1.'
+'elementsMassFractions': 'Массовые доли элементов - %1.'
+
+'atoms': 'атом(а,ов)'
+
+
+
+
+

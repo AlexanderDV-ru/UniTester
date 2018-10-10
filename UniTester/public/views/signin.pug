@@ -1,0 +1,25 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.signin}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	include /infoElement
+	br
+	div#signin
+		form(action="/signin" method="post")
+			table
+				tr
+					td(align="right")
+						label #{$msgs$.login}
+					td(align="left")
+						input(type="text" name="login")
+				tr
+					td(align="right")
+						label #{$msgs$.password}
+					td(align="left")
+						input(type="password" name="password")
+			input(type="submit" value=$msgs$.signin)

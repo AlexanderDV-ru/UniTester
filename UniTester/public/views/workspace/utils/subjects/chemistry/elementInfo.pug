@@ -1,0 +1,14 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.elementInfo}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+	
+block content
+	table
+		- for(var v in data.chemicalElement)
+			tr
+				td #{v}
+				td #{data.chemicalElement[v]}

@@ -1,0 +1,142 @@
+/* INPUT TEXT */
+input[type="text"]:not(.browserStyle), input[type="password"]:not(.browserStyle), input[type="search"]:not(.browserStyle), input[type="number"]:not(.browserStyle) {
+	padding: 0 10px;
+	font-size: 16px;
+	outline: none;
+	height: 33px;
+	color: #96999e;
+	border: 2px solid #e0e2e6;
+	background: white;
+	border-radius: 10px;
+	margin: 0px;
+	z-index: 1;
+	position: relative;
+	font-family: 'PT Sans', sans-serif;
+	box-sizing: border-box;
+	transition: border 0.3s linear, color 0.3s linear;
+}
+
+input::-ms-clear:not(.browserStyle) {
+	display: none;
+}
+
+input[type="text"].quantity:not(.browserStyle) {
+	padding: 0 15px;
+	text-align: center;
+	width: 40px;
+}
+
+input[type="text"]:hover:not(.browserStyle), input[type="password"]:hover:not(.browserStyle), input[type="number"]:hover:not(.browserStyle), input[type="search"]:hover:not(.browserStyle) {
+	border-color: #5c9ffa;
+}
+
+input[type="text"]:focus:not(.browserStyle), input[type="password"]:focus:not(.browserStyle), input[type="number"]:focus:not(.browserStyle), input[type="search"]:focus:not(.browserStyle) {
+	border-color: #1d72de;
+	color: #2c2e32;
+}
+
+input[type="text"]:disabled:not(.browserStyle), input[type="button"]:disabled:not(.browserStyle), input[type="password"]:disabled:not(.browserStyle), input[type="number"]:disabled:not(.browserStyle),
+	input[type="search"]:disabled:not(.browserStyle) {
+	background: #f0f2f6 !important;
+	color: #a4a6aa !important;
+	border-color: #e0e2e6 !important;
+	cursor: default;
+}
+
+input[type="text"]:disabled:hover:not(.browserStyle), input[type="button"]:disabled:hover:not(.browserStyle), input[type="password"]:disabled:hover:not(.browserStyle), input[type="number"]:disabled:hover:not(.browserStyle),
+	input[type="search"]:disabled:hover:not(.browserStyle) {
+	border-color: #e0e2e6 !important;
+}
+
+input[type="text"].u-form-error:not(.browserStyle), textarea.u-form-error:not(.browserStyle) {
+	border: 2px solid #fd4339;
+}
+
+/* GREEN BUTTON */
+input[type="submit"]:not(.browserStyle), .greenButton:not(.browserStyle), input[type="button"]:not(.browserStyle), button:not(.browserStyle) {
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+	-moz-box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+	box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+	display: block;
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	padding: 5px 16px;
+	margin: 0px;
+	text-decoration: none;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+	-webkit-transition: background-color 0.1s linear;
+	-moz-transition: background-color 0.1s linear;
+	-o-transition: background-color 0.1s linear;
+	transition: background-color 0.1s linear;
+}
+
+input[type="submit"]:not(.browserStyle), .greenButton:not(.browserStyle), input[type="button"]:not(.browserStyle), button:not(.browserStyle) {
+	background-color: rgb(43, 153, 91);
+	border: 1px solid rgb(23, 106, 54);
+	color: #fff;
+}
+
+input[type="submit"]:hover:not(.browserStyle), .greenButton:hover:not(.browserStyle), input[type="button"]:hover:not(.browserStyle), button:hover:not(.browserStyle), input[type="submit"].hoverCSS:not(.browserStyle),
+	.greenButton.hoverCSS:not(.browserStyle), input[type="button"].hoverCSS:not(.browserStyle), button.hoverCSS:not(.browserStyle) {
+	background-color: rgb(65, 173, 131);
+	border-color: rgb(35, 120, 90);
+	color: #ddd;
+}
+
+input[type="submit"]:disabled:not(.browserStyle), .greenButton:disabled:not(.browserStyle), input[type="button"]:disabled:not(.browserStyle), button:disabled:not(.browserStyle), input[type="submit"].disabledCSS:not(.browserStyle),
+	.greenButton.disabledCSS:not(.browserStyle), input[type="button"].disabledCSS:not(.browserStyle), button.disabledCSS:not(.browserStyle) {
+	background-color: #5e9179;
+	border-color: #3d5f50;
+	color: #aeaeae;
+}
+
+input[type="submit"]:active:not(.browserStyle), .greenButton:active:not(.browserStyle), input[type="button"]:active:not(.browserStyle), button:active:not(.browserStyle), input[type="submit"].activeCSS:not(.browserStyle),
+	.greenButton.activeCSS:not(.browserStyle), input[type="button"].activeCSS:not(.browserStyle), button.activeCSS:not(.browserStyle) {
+	-webkit-box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(0, 0, 0, 0.2);
+	box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(0, 0, 0, 0.2);
+	background-color: rgb(45, 143, 101);
+	border-color: rgb(23, 116, 64);
+	color: #ccc;
+}
+
+/* TEXTAREA */
+textarea:not(.browserStyle) {
+	padding: 9px 10px;
+	outline: none;
+	color: #2c2e32;
+	border: 2px solid #e0e2e6;
+	background: white;
+	border-radius: 10px;
+	width: 100%;
+	margin: 0px;
+	box-sizing: border-box;
+	min-height: 70px;
+	resize: vertical;
+	font: 9pt monospace;
+	transition: border 0.3s linear;
+}
+
+textarea:hover:not(.browserStyle) {
+	border-color: #5c9ffa;
+}
+
+textarea:focus:not(.browserStyle) {
+	border-color: #1d72de;
+	color: #2c2e32;
+}
+
+form:not(.browserStyle) {
+	padding: 0px;
+	margin: 0px;
+}
+
+input:not(.browserStyle), select:not(.browserStyle) {
+	vertical-align: middle;
+}
+
+input[readonly]:not(.browserStyle) {
+	color: #BBBBBB
+}

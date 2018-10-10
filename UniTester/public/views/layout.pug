@@ -1,0 +1,59 @@
+doctype html
+html
+	head
+		include /protection
+		block title
+			title Title not setted!
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		block inHead0
+		block inHead1
+		block inHead2
+		block inHead3
+	body
+		include /protection
+		noscript 
+			div(style="color: red;font-size: 24px;" align="center")
+				div #{$msgs$.jsDisabled}
+				div #{$msgs$.enableJsToUse}
+				br
+				div(style="font-size: 18px;")
+					a(href="//www.google.com/search?q="+$msgs$.howToEnableJS) #{$msgs$.findInGoogle}
+					br
+					br
+					a(href="//yandex.ru/search/?text="+$msgs$.howToEnableJS) #{$msgs$.findInYandex}
+		div#onjsenabled(style="display: none")
+			include /protection
+			script!= 'var $msgs$='+JSON.stringify($msgs$)
+			include /protection
+			script. 
+				var getMsg=function(msg)
+				{
+					return $msgs$[msg]!==undefined&&$msgs$[msg]!==null?$msgs$[msg]:(msg==="error_messageUndefined"?"Error: message \'%0\' undefined!":getMsg("error_messageUndefined")).replace("%0",msg)
+				}
+			include /protection
+			script.
+				function sendRequest(type, requestPath, requestArgs, func)
+				{
+					var httpRequest = new XMLHttpRequest()
+					if (type.toLowerCase() === "post")
+					{
+						httpRequest.open("POST", requestPath)
+						httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+					}
+					else httpRequest.open("GET", requestPath + "?" + requestArgs)
+					httpRequest.onreadystatechange = function()
+					{
+						if (this.readyState == 4 && this.status == 200)
+						{
+							func(this.responseText)
+							delete this
+						}
+					}
+					httpRequest.timeout = 5000
+					if (type.toLowerCase() === "post")
+						httpRequest.send(requestArgs)
+					else httpRequest.send()
+				}
+			block jsEnabledContent
+		script document.getElementById("onjsenabled").style.display=""
+		script var vs=document.getElementsByTagName("script");for(var v=0;v<vs.length;v++)if(!vs[v].id)vs[v].id="script"+Math.round(Math.random()*Math.pow(10,Math.random()*10));delete this

@@ -1,0 +1,42 @@
+extends /layout
+
+block jsEnabledContent
+	header(style="background-color: #5AA0F0; width: 100%; padding: 0; vertical-align: middle; color: white;font-size: 20px;")
+		div(style="height: 20px")
+		div#title(style="display: inline-block; width: 33%; vertical-align: middle;" align="left")
+			a.nontexthref(href="/") #{$msgs$.sitename}
+		div#reload(style="display: inline-block; width: 33%; vertical-align: middle;" align="center")
+			a.nontexthref(href=".") #{$msgs$.reloadpage}
+		div#account(style="display: inline-block; width: 33%; vertical-align: middle;" align="right")
+			- if(data.userLogin!==null)
+				div.nontexthref(onmousedown="document.getElementById('accountinfo').style.display='';setTimeout(function(){document.getElementById('accountinfo').focus();},50);" style="cursor: pointer;")
+					span(style="font-size: 16px;") #{data.userSurname} #{data.userName} #{data.userSecondName}
+					br
+					span(style="font-size: 14px;") #{data.userLogin}
+		div(style="height: 20px")
+	div#accountinfo(tabindex="0" style="display: none; position: absolute; top: 64px; right: 0px; padding: 5px; background-color: #5AA0F0;")
+		a.greenButton(href="/signout") #{$msgs$.signout}
+	script(type="text/javascript").
+		var focused
+		var last
+		var onFocusChange=function()
+			{
+				if(last+100===new Date().getTime())
+					if(focused)
+						document.getElementById('accountinfo').style.top=document.getElementsByTagName('header')[0].getBoundingClientRect().bottom+'px'
+					else document.getElementById('accountinfo').style.display='none'
+			}
+		document.getElementById("accountinfo").addEventListener("focus",function()
+		{
+			focused=true
+			last=new Date().getTime()
+			setTimeout(onFocusChange,100)
+		},true)
+		document.getElementById("accountinfo").addEventListener("blur",function()
+		{
+			focused=false
+			last=new Date().getTime()
+			setTimeout(onFocusChange,100)
+		})
+	div#interface(align="center" style="position: relative;")
+		block content

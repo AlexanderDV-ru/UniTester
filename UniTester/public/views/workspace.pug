@@ -1,0 +1,14 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.workspaceSelect}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	- if(data.groupsPerms.length===0)
+		div #{$msgs$.workspaceWithAccessNotExists}
+	- for(var v=0,path,msg;v<data.groupsPerms.length;v++)
+		a(href="/workspace/"+data.groupsPerms[v])= msg=$msgs$[data.groupsPerms[v]+"Workspace"]
+		

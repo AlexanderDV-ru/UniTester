@@ -1,0 +1,7 @@
+- function createMenues(menuItems) { for(var v in menuItems)
+	ul.menu
+		li.menuItem
+			a(href=menuItems[v].href) #{menuItems[v].text}
+			- if(menuItems[v].menuItems) createMenues(menuItems[v].menuItems)
+- }
+- createMenues(data.menues)
