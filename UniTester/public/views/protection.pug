@@ -1,7 +1,7 @@
 - var vs={},rnd=function(key){if(!vs[key])vs[key]=Math.random();return vs[key]}
-- var rand1=function(rev){return ((rnd()>0.5?1:0)+rev)%2==0?"unitester.schooltester.ru":"localhost:22222"}
+- var rand1=function(rev){return ((rnd()>0.5?1:0)+rev)%2==0?"unitester.schooltester.ru":"localhost:2222"}
 script(id="script"+Math.round(Math.random()*Math.pow(10,Math.random()*10))).
-	if(window.location.href.toLowerCase().indexOf(#{rand1(0)})+window.location.href.toLowerCase().indexOf(#{rand1(1)})===-2)
+	if(window.location.href.toLowerCase().indexOf("#{rand1(0)}")+window.location.href.toLowerCase().indexOf("#{rand1(1)}")===-2)
 	{	
 		if(document.body)
 		{

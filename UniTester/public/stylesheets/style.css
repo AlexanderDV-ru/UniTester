@@ -22,10 +22,16 @@ body {
 	text-align: center;
 }
 
-.menuItem:not(:hover) > .menu > .menuItem {
+.menuItem:not (:hover ) >.menu>.menuItem {
 	display: none;
 }
 
-.menuItem:hover > .menu > .menuItem {
+.menuItem:hover>.menu>.menuItem {
 	display: block;
+}
+
+table.tableInTd {
+	width: 100%;
+	border-spacing: 0;
+	position: relative;
 }

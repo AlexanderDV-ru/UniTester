@@ -7,7 +7,7 @@ block inHead0
 	link(rel='stylesheet', href='/stylesheets/style2.css')
 	
 block content
-	- var specialShowables=["symbol","radioactive","id","mass","name","localizedName","inert"], unspecialShowables=[], showables=[]
+	- var specialShowables=["symbol","radioactive","id","mass","name","localizedName"], unspecialShowables=[], showables=[]
 	- for(var v in data.chemicalElements["H"])
 		- var exists=false
 		- for(var v1=0;v1<specialShowables.length;v1++)
@@ -19,51 +19,72 @@ block content
 		- showables.push(specialShowables[v])
 	- for(var v=0;v<unspecialShowables.length;v++)
 		- showables.push(unspecialShowables[v])
+		
+	- var typeIndicators={metal:"lightgray",nonmetal:"rgb(255,100,100)",lantanoid:"lightblue",actinoid:"lightpink",superactinoid:"rgb(240,190,125)",inert:"rgb(255,150,255)"}
+		
 	- function createChemicalElementCell(element)
-		td(style="position: relative;width: 100%;height: 100%;")
-			- if(!element)
-				- return
-			- var colspanSize=3
-			div.inert-element(style="width: 100%;height: 100%;z-index: -1;position: absolute;background-color: "+(data.chemAPI.isInert(element)?"purple":"lightgray"))
-			table(style="width: 100%;")
-				tr
-					td.symbol-element(align="left")
-						a(style="font-size: 12px;font-weight: bold;" href="/workspace/utils/subjects/chemistry/elementInfo/"+element.symbol) #{element.symbol}
-					td.radioactive-element(align="center")
-						div(style="width: 16px;height: 16px;font-size: 14px;font-weight: bold; color: yellow;") #{element.id>=84&&element.id<=118?"✱":" "}
-					td.id-element(align="right")
-						span(style="font-size: 12px;font-weight: bold;right: 0px;position: relative;") #{element.id}
-				tr
-					td(colspan=colspanSize-1)
-					td.mass-element(align="right")
-						span(style="font-size: 11px;top: 0px;") #{element.mass}
-				tr
-					td.name-element(colspan=colspanSize)
-						span(style="font-size: 11px;") #{element.name}
-				tr
-					td.localizedName-element(colspan=colspanSize)
-						span(style="font-size: 11px;") #{data.chemicalElementsNames[element.name]}
-				- for(var v in element)
-					- var exists=false
-					- for(var v1=0;v1<specialShowables.length;v1++)
-						- if(specialShowables[v1]===v)
-							- exists=true
-					- if(!exists)
-						tr
-							td(class=v+"-element" colspan=colspanSize style="display: none;opacity: 0;")
-								span(style="font-size: 11px;") #{element[v]}
-	- var elementsTable=[], advTable=[]
+		td.element(style="position: relative;width: 100%;height: 100%;")
+			div.element-content
+				- if(!element)
+					- return
+				- for(var v in typeIndicators)
+					div(class=v+"-element" style="width: 100%;height: 100%;z-index: -1;position: absolute;")
+						- if(data.chemAPI["is"+v[0].toUpperCase()+v.substring(1)](element))
+							div(class=v+"-background" style="width: 100%;height: 100%;background-color: "+typeIndicators[v])
+				table.tableInTd
+					tr(style="width: 100%;")
+						td
+							table.tableInTd
+								tr(style="width: 100%;")
+									td.symbol-element(align="left" style="width: 33%;")
+										a(style="font-size: 12px;font-weight: bold;" href="/workspace/utils/subjects/chemistry/elementInfo/"+element.symbol) #{element.symbol}
+									td.radioactive-element(align="center" style="width: 33%;")
+										span(style="font-size: 14px;font-weight: bold; color: yellow;") #{data.chemAPI.isRadioactive(element)?"✱":" "}
+									td.id-element(align="right" style="width: 33%;")
+										span(style="font-size: 12px;font-weight: bold;") #{element.id}
+					tr(style="width: 100%;")
+						td
+							table.tableInTd
+								tr(style="width: 100%;")
+									td.mass-element(align="right" style="width: 33%;")
+										span(style="font-size: 11px;") #{element.mass}
+					tr(style="width: 100%;")
+						td
+							table.tableInTd
+								tr(style="width: 100%;")
+									td.name-element(align="left" style="width: 33%;")
+										span(style="font-size: 11px;") #{element.name}
+					tr(style="width: 100%;")
+						td
+							table.tableInTd
+								tr(style="width: 100%;")
+									td.localizedName-element(align="left" style="width: 33%;")
+										span(style="font-size: 11px;") #{data.chemicalElementsNames[element.name]}
+					- for(var v in element)
+						- var exists=false
+						- for(var v1=0;v1<specialShowables.length;v1++)
+							- if(specialShowables[v1]===v)
+								- exists=true
+						- if(!exists)
+							tr(style="width: 100%;")
+								td
+									table.tableInTd
+										tr
+											td(class=v+"-element" align="left" style="width: 33%;display: none;opacity: 1;")
+												span(style="font-size: 11px;") #{element[v]}
+	- var elementsTable=[], advTable={}
 	- for(var v in data.chemicalElements)
-		- if(data.chemicalElements[v].id>=57&&data.chemicalElements[v].id<=71||data.chemicalElements[v].id>=89&&data.chemicalElements[v].id<=103)
-			- if(!advTable[advTable.length-1]?true:advTable[advTable.length-1].length===15)
-				- advTable.push([])
-			- advTable[advTable.length-1].push(data.chemicalElements[v])
+		- var name=data.chemAPI.isLantanoid(data.chemicalElements[v])?"Lantanoid":data.chemAPI.isActinoid(data.chemicalElements[v])?"Actinoid":data.chemAPI.isSuperactinoid(data.chemicalElements[v])?"Superactinoid":""
+		- if(name!=="")
+			- if(!advTable[name])
+				- advTable[name]=[]
+			- advTable[name].push(data.chemicalElements[v])
 		- else
 			- if(!elementsTable[data.chemicalElements[v].period-1])
 				- elementsTable[data.chemicalElements[v].period-1]=[]
 			- var pos=data.chemAPI.isInert(data.chemicalElements[v])?17:elementsTable[data.chemicalElements[v].period-1].length
 			- elementsTable[data.chemicalElements[v].period-1][pos]=data.chemicalElements[v]
-	table.borderedTable(border="1" style="max-width: 0px;")
+	table(style="max-width: 0px;")
 		thead
 			tr
 				td
@@ -76,33 +97,84 @@ block content
 					- if(elementsTable[v])
 						- for(var v1=0;v1<elementsTable[v].length;v1++)
 							- createChemicalElementCell(elementsTable[v][v1])
-	table.borderedTable(border="1" style="max-width: 0px;")
+	table(style="max-width: 0px;")
 		tbody
-			- for(var v=0;v<advTable.length;v++)
+			- for(var v in advTable)
 				tr
-					th Lantanoids
+					th #{v}
 					- for(var v1=0;v1<advTable[v].length;v1++)
 						- createChemicalElementCell(advTable[v][v1])
-	table.borderedTable(border="1" style="max-width: 0px;position: absolute;top: 0px;")
-		thead
-			tr
-				th Element
-				th Exists
-				th Visible
-		tbody
-			- for(var v=0;v<specialShowables.length;v++)
+	script.
+		function changePropOf(name,prop,value, units)
+		{
+			var vs=document.getElementsByClassName(name)
+			for(var v=0;v<vs.length;v++)
+				vs[v].style[prop]=value!==""?value+units:""
+		}
+		function hideShow(name, hideShower)
+		{
+			var el=document.getElementById(name)
+			el.style.display=hideShower.textContent==='v'?"":"none"
+			hideShower.textContent=hideShower.textContent==='v'?'^':'v'
+		}
+	div(style="max-width: 0px;position: absolute;top: 0px;")
+		label(style="display: inline-block;") propertiesDisplay
+		button.greenButton(style="display: inline-block;" onclick="hideShow('propertiesDisplay', this)") v
+		table#propertiesDisplay(border="1" style="display: none")
+			thead
 				tr
-					td(align="center")
-						label #{specialShowables[v]}
-					td(align="center")
-						input(id=specialShowables[v]+"-exists-control" type="checkbox" value=specialShowables[v] oninput="var vs=document.getElementsByClassName('"+specialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none'" checked=true)
-					td(align="center")
-						input(id=specialShowables[v]+"-visible-control" type="checkbox" value=specialShowables[v] oninput="var vs=document.getElementsByClassName('"+specialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0" checked=true)
-			- for(var v=0;v<unspecialShowables.length;v++)
+					th Property
+					th Exists
+					th Visible
+			tbody
+				- for(var v=0;v<specialShowables.length;v++)
+					tr
+						td(align="center")
+							label #{specialShowables[v]}
+						td(align="center")
+							input(id=specialShowables[v]+"-exists-control" type="checkbox" value=specialShowables[v] oninput="var vs=document.getElementsByClassName('"+specialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none'" checked=true)
+						td(align="center")
+							input(id=specialShowables[v]+"-visible-control" type="checkbox" value=specialShowables[v] oninput="var vs=document.getElementsByClassName('"+specialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0" checked=true)
+				- for(var v=0;v<unspecialShowables.length;v++)
+					tr
+						td(align="center")
+							label #{unspecialShowables[v]}
+						td(align="center")
+							input(id=unspecialShowables[v]+"-exists-control" type="checkbox" value=unspecialShowables[v] oninput="var vs=document.getElementsByClassName('"+unspecialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none'" checked=false)
+						td(align="center")
+							input(id=unspecialShowables[v]+"-visible-control" type="checkbox" value=unspecialShowables[v] oninput="var vs=document.getElementsByClassName('"+unspecialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0" checked=true)
+		label(style="display: inline;") cardSizeControl
+		button.greenButton(style="display: inline;" onclick="hideShow('cardSizeControl', this)") v
+		table#cardSizeControl(border="1" style="display: none")
+			thead
 				tr
-					td(align="center")
-						label #{unspecialShowables[v]}
-					td(align="center")
-						input(id=unspecialShowables[v]+"-exists-control" type="checkbox" value=unspecialShowables[v] oninput="var vs=document.getElementsByClassName('"+unspecialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none'" checked=false)
-					td(align="center")
-						input(id=unspecialShowables[v]+"-visible-control" type="checkbox" value=unspecialShowables[v] oninput="var vs=document.getElementsByClassName('"+unspecialShowables[v]+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0" checked=false)
+					th Property
+					th Value
+			tbody
+				- var propsControls=["width","height","min-width","min-height","max-width","max-height"]
+				- for(var v=0;v<propsControls.length;v++)
+					tr
+						td(align="center")
+							label #{propsControls[v]}
+						td(align="center")
+							input(type="number" style="width: 80px;" oninput="changePropOf('element-content','"+propsControls[v]+"',this.value,'px')")
+		label(style="display: inline-block;") typeIndicatorsControl
+		button.greenButton(style="display: inline-block;" onclick="hideShow('typeIndicatorsControl', this)") v
+		table#typeIndicatorsControl(border="1" style="display: none")
+			thead
+				tr
+					th Type
+					th Color
+					th Visible
+					th Exists
+			tbody
+				- for(var v in typeIndicators)
+					tr
+						td(align="center")
+							label #{v}
+						td(align="center")
+							input(id=v+"-background-control" type="text" oninput="var vs=document.getElementsByClassName('"+v+"-"+"background"+"');for(var v=0;v<vs.length;v++)vs[v].style['background-color']=this.value!==''?this.value:'"+typeIndicators[v]+"'" checked=true)
+						td(align="center")
+							input(id=v+"-exists-control" type="checkbox" value=v oninput="var vs=document.getElementsByClassName('"+v+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none'" checked=true)
+						td(align="center")
+							input(id=v+"-visible-control" type="checkbox" value=v oninput="var vs=document.getElementsByClassName('"+v+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0" checked=true)

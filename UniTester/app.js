@@ -11,7 +11,7 @@ var accepts = require('accepts')
 var application = express()
 
 var programName = exports.programName = "UniTester"
-var programVersion = exports.programVersion = "0.3.1a"
+var programVersion = exports.programVersion = "0.3.4a"
 var programAuthors = exports.programAuthors = "AlexanderDV"
 var program = exports.program = programName + " v" + programVersion + " by " + programAuthors
 
@@ -718,6 +718,33 @@ chemAPI.isInert = function(chemElement)
 			return false
 	}
 	return false
+}
+
+chemAPI.isMetal = function(chemElement)
+{
+	return chemElement.type.toLowerCase() === "metal"
+}
+chemAPI.isNonmetal = function(chemElement)
+{
+	return chemElement.type.toLowerCase() === "nonmetal"
+}
+
+chemAPI.isLantanoid = function(chemElement)
+{
+	return chemElement.id >= 57 && chemElement.id <= 71
+}
+chemAPI.isActinoid = function(chemElement)
+{
+	return chemElement.id >= 89 && chemElement.id <= 103
+}
+chemAPI.isSuperactinoid = function(chemElement)
+{
+	return chemElement.id >= 121 && chemElement.id <= 135
+}
+
+chemAPI.isRadioactive = function(chemElement)
+{
+	return chemElement.id >= 84 && chemElement.id <= 118
 }
 
 get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}',
