@@ -1,0 +1,35 @@
+extends /headered
+
+block title
+	title #{$msgs$.testCreation} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	table
+		tr
+			td
+				label #{$msgs$.testName}
+			td
+				input#testName
+		tr
+			td
+				label #{$msgs$.testVersion}
+			td
+				input#testVersion
+		tr
+			td
+				label #{$msgs$.testAuthors}
+			td
+				input#testAuthors
+	textarea#codeArea
+	script.
+		function saveTestClick()
+		{
+			sendRequest('post', '/testCreation', 'code='+encodeURIComponent(document.getElementById('codeArea').value)+"&name="+encodeURIComponent(document.getElementById('testName').value)+"&version="+encodeURIComponent(document.getElementById('testVersion').value)+"&authors="+encodeURIComponent(document.getElementById('testAuthors').value), function(text)
+			{
+				alert(text!=="ok"?text:$msgs$.testCreatedSuccessfully)
+			})
+		}
+	button(onclick="saveTestClick()") #{$msgs$.saveTest}

@@ -11,7 +11,7 @@ var accepts = require('accepts')
 var application = express()
 
 var programName = exports.programName = "UniTester"
-var programVersion = exports.programVersion = "0.3.4a"
+var programVersion = exports.programVersion = "0.3.7a"
 var programAuthors = exports.programAuthors = "AlexanderDV"
 var program = exports.program = programName + " v" + programVersion + " by " + programAuthors
 
@@ -23,7 +23,8 @@ var urlencodedParser = bodyParser.urlencoded(
 	useNewUrlParser : true
 }
 
-var mongoClient = require("mongodb").MongoClient
+var mongoDBmodule = require("mongodb")
+var mongoClient = mongoDBmodule.MongoClient
 var url = "mongodb://localhost:27017/"
 
 var mongoDBClient
@@ -219,8 +220,7 @@ function updateUsersAndGetBySession(users, session, languages)
 				{
 					console.log(users[v]);
 					console.log(" updated after " + timeFromActive + "ms");
-					addUser(user = new dbInterface.User(users[v].login, session, new Date().getTime(),
-							users[v].languages || languages));
+					addUser(user = new dbInterface.User(users[v].login, session, new Date().getTime(), users[v].languages || languages));
 				}
 	}
 	return user;
@@ -327,16 +327,13 @@ post([ '/signin', '/signin/info/[^/\?]+', '/signin/error/[^/\?]+', '/signin/ok/[
 			console.log(accounts[v])
 			console.log(request.body)
 			console.log(hashCode(request.body.password))
-			if (accounts[v].login.toLowerCase() === request.body.login.toLowerCase()
-					&& accounts[v].passwordHash === hashCode(request.body.password))
+			if (accounts[v].login.toLowerCase() === request.body.login.toLowerCase() && accounts[v].passwordHash === hashCode(request.body.password))
 			{
-				addUser(new dbInterface.User(request.body.login, request.connection.remoteAddress,
-						new Date().getTime(), accepts(request).languages()));
+				addUser(new dbInterface.User(request.body.login, request.connection.remoteAddress, new Date().getTime(), accepts(request).languages()));
 
 				for (var v = 0; v < callingUrls.length; v++)
 					if (callingUrls[v].session == request.connection.remoteAddress)
-						if (callingUrls[v].callingUrl.indexOf("signin") === -1
-								&& callingUrls[v].callingUrl.indexOf("signout") === -1)
+						if (callingUrls[v].callingUrl.indexOf("signin") === -1 && callingUrls[v].callingUrl.indexOf("signout") === -1)
 							return response.redirect(callingUrls[v].callingUrl)
 				return response.redirect("/")
 			}
@@ -345,10 +342,7 @@ post([ '/signin', '/signin/info/[^/\?]+', '/signin/error/[^/\?]+', '/signin/ok/[
 	});
 }, undefined, undefined, undefined, true)
 
-get([ '/accounts/management', '/accounts/management/info/[^/\?]+/[^/\?]+', '/accounts/management/info/[^/\?]+',
-		'/accounts/management/error/[^/\?]+/[^/\?]+', '/accounts/management/error/[^/\?]+',
-		'/accounts/management/ok/[^/\?]+/[^/\?]+', '/accounts/management/ok/[^/\?]+' ], function(request, response,
-		allPerms, account)
+get([ '/accounts/management', '/accounts/management/info/[^/\?]+/[^/\?]+', '/accounts/management/info/[^/\?]+', '/accounts/management/error/[^/\?]+/[^/\?]+', '/accounts/management/error/[^/\?]+', '/accounts/management/ok/[^/\?]+/[^/\?]+', '/accounts/management/ok/[^/\?]+' ], function(request, response, allPerms, account)
 {
 	get("accounts", function(err, accounts1)
 	{
@@ -373,17 +367,14 @@ get([ '/accounts/management', '/accounts/management/info/[^/\?]+/[^/\?]+', '/acc
 				case "loginLengthCantBeGreaterThan30":
 					return "Login length can't be greater than 30!";
 				case "loginContainsInvalidSymbols":
-					return "Login contains invalid symbols! "
-							+ "Login can contain digits, lowercase and uppercase latin letters.";
+					return "Login contains invalid symbols! " + "Login can contain digits, lowercase and uppercase latin letters.";
 				case "accountAlreadyExists":
 					return "Account already exists!";
 
 				case "notPermsToGiveGroup":
-					return "You don't have permissions to give group '" + request.url.split(new RegExp("[/\?]"))[5]
-							+ "'";
+					return "You don't have permissions to give group '" + request.url.split(new RegExp("[/\?]"))[5] + "'";
 				case "notPermsToGivePerm":
-					return "You don't have permissions to give perm '" + request.url.split(new RegExp("[/\?]"))[5]
-							+ "'";
+					return "You don't have permissions to give perm '" + request.url.split(new RegExp("[/\?]"))[5] + "'";
 				default:
 					return "";
 			}
@@ -497,8 +488,7 @@ function parseChemicalFormula(formula)
 		for ( var elName in chemicalElements)
 		{
 			var el = chemicalElements[elName];
-			if (formulaDin.indexOf(elName) != -1
-					&& (formulaDin + "\n")[formulaDin.indexOf(elName) + elName.length].replace(/[a-z]/, "") !== "")
+			if (formulaDin.indexOf(elName) != -1 && (formulaDin + "\n")[formulaDin.indexOf(elName) + elName.length].replace(/[a-z]/, "") !== "")
 			{
 				var indexStr = "";
 				for (var v2 = formulaDin.indexOf(elName) + elName.length; v2 < formulaDin.length; v2++)
@@ -518,23 +508,18 @@ function parseChemicalFormula(formula)
 					amount : amount,
 					element : el
 				};
-				formulaDin = formulaDin.substring(0, formulaDin.indexOf(elName))
-						+ formulaDin.substring(formulaDin.indexOf(elName) + elName.length + indexStr.length);
+				formulaDin = formulaDin.substring(0, formulaDin.indexOf(elName)) + formulaDin.substring(formulaDin.indexOf(elName) + elName.length + indexStr.length);
 			}
 		}
 	return elements
 }
 function replaceSmallToNormal(formula)
 {
-	return typeof (formula) === "string" ? formula.replace(/₀/g, "0").replace(/₁/g, "1").replace(/₂/g, "2").replace(
-			/₃/g, "3").replace(/₄/g, "4").replace(/₅/g, "5").replace(/₆/g, "6").replace(/₇/g, "7").replace(/₈/g, "8")
-			.replace(/₉/g, "9") : formula
+	return typeof (formula) === "string" ? formula.replace(/₀/g, "0").replace(/₁/g, "1").replace(/₂/g, "2").replace(/₃/g, "3").replace(/₄/g, "4").replace(/₅/g, "5").replace(/₆/g, "6").replace(/₇/g, "7").replace(/₈/g, "8").replace(/₉/g, "9") : formula
 }
 function replaceNormalToSmall(formula)
 {
-	return typeof (formula) === "string" ? formula.replace(/0/g, "₀").replace(/1/g, "₁").replace(/2/g, "₂").replace(
-			/3/g, "₃").replace(/4/g, "₄").replace(/5/g, "₅").replace(/6/g, "₆").replace(/7/g, "₇").replace(/8/g, "₈")
-			.replace(/9/g, "₉") : formula
+	return typeof (formula) === "string" ? formula.replace(/0/g, "₀").replace(/1/g, "₁").replace(/2/g, "₂").replace(/3/g, "₃").replace(/4/g, "₄").replace(/5/g, "₅").replace(/6/g, "₆").replace(/7/g, "₇").replace(/8/g, "₈").replace(/9/g, "₉") : formula
 }
 
 function multiply(str, count)
@@ -552,8 +537,7 @@ function doubleToString(number, signs)
 	number = number + "";
 	if (number.indexOf(".") == -1)
 		number += ".0";
-	return signs == 0 ? Number.parseInt(number + "") : "" + (number + "").split(".")[0] + "."
-			+ (number + multiply("0", signs)).split(".")[1].substring(0, signs);
+	return signs == 0 ? Number.parseInt(number + "") : "" + (number + "").split(".")[0] + "." + (number + multiply("0", signs)).split(".")[1].substring(0, signs);
 }
 
 function sizeOf(object)
@@ -592,9 +576,7 @@ function descript(formula, naming, chemicalElementsLanguage, language, signsAfte
 
 	if (!(elements instanceof Array))
 		if (elements.type === "IndexLessThanOneErrorInFormulaException")
-			return msgs["indexLessThanOneErrorInFormula"].replace(/%1/g,
-					e1.message.substring(e1.message.indexOf(" (") + 2, e1.message.indexOf(") "))).replace(/%2/g,
-					e1.message.substring("Index of ".length(), e1.message.indexOf(" (")));
+			return msgs["indexLessThanOneErrorInFormula"].replace(/%1/g, e1.message.substring(e1.message.indexOf(" (") + 2, e1.message.indexOf(") "))).replace(/%2/g, e1.message.substring("Index of ".length(), e1.message.indexOf(" (")));
 		else if (elements.type === "InertGasCompoundErrorInFormulaException")
 			return msgs["inertGasCompoundErrorInFormula"];
 		else if (elements.type === "NotClosedBracketErrorInFormulaException")
@@ -614,49 +596,34 @@ function descript(formula, naming, chemicalElementsLanguage, language, signsAfte
 	var first = true;
 	for ( var el in elements)
 	{
-		elementsStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.name] + "("
-				+ elements[el].element.symbol + ")";
-		amountStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.name] + "("
-				+ elements[el].element.symbol + ")" + " - " + elements[el].amount + " " + msgs["atoms"];
-		molecularMassStr += (first ? "" : " + ")
-				+ doubleToString(elements[el].element.mass * elements[el].amount, signsAfterComma) + "("
-				+ elements[el].element.symbol + ", " + doubleToString(elements[el].element.mass, signsAfterComma)
-				+ " * " + elements[el].amount + ")";
+		elementsStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.name] + "(" + elements[el].element.symbol + ")";
+		amountStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.name] + "(" + elements[el].element.symbol + ")" + " - " + elements[el].amount + " " + msgs["atoms"];
+		molecularMassStr += (first ? "" : " + ") + doubleToString(elements[el].element.mass * elements[el].amount, signsAfterComma) + "(" + elements[el].element.symbol + ", " + doubleToString(elements[el].element.mass, signsAfterComma) + " * " + elements[el].amount + ")";
 		var first2 = true;
 		for ( var el2 in elements)
 			if (el != el2)
 				if (used[el2] ? !used[el2][el] : true)
 				{
-					propStr += (first && first2 ? "" : ", ") + elements[el].element.symbol + ":"
-							+ elements[el2].element.symbol + "="
-							+ doubleToString(elements[el].element.mass * elements[el].amount, signsAfterComma) + ":"
-							+ doubleToString(elements[el2].element.mass * elements[el2].amount, signsAfterComma);
+					propStr += (first && first2 ? "" : ", ") + elements[el].element.symbol + ":" + elements[el2].element.symbol + "=" + doubleToString(elements[el].element.mass * elements[el].amount, signsAfterComma) + ":" + doubleToString(elements[el2].element.mass * elements[el2].amount, signsAfterComma);
 					if (!used[el])
 						used[el] = [];
 					used[el].push(el2);
 					first2 = false;
 				}
-		massDolesStr += (first ? "" : ", ")
-				+ elements[el].element.symbol
-				+ "~"
-				+ doubleToString(elements[el].element.mass * elements[el].amount / molecularMass * 100, signsAfterComma)
-				+ "%";
+		massDolesStr += (first ? "" : ", ") + elements[el].element.symbol + "~" + doubleToString(elements[el].element.mass * elements[el].amount / molecularMass * 100, signsAfterComma) + "%";
 		first = false;
 	}
 	molecularMassStr += " = " + doubleToString(molecularMass, signsAfterComma);
 	var description = "\t" + replaceNormalToSmall(formula) + "\n";
 	description += "1. " + msgs["specificSubstance"].replace("%1", naming) + "\n";
-	description += "2. "
-			+ msgs["qualitativeComposition"].replace("%1", sizeOf(elements) + "").replace("%2", elementsStr) + "\n";
+	description += "2. " + msgs["qualitativeComposition"].replace("%1", sizeOf(elements) + "").replace("%2", elementsStr) + "\n";
 	var cell
 	for ( var k in elements)
 	{
 		cell = elements[k]
 		break
 	}
-	description += "3. "
-			+ msgs["substanceType"].replace("%1", (sizeOf(elements) > 1 ? "сложное" : (cell.amount > 1
-					|| isInert(cell.element) ? "простое" : "одиночный атом"))) + "\n"
+	description += "3. " + msgs["substanceType"].replace("%1", (sizeOf(elements) > 1 ? "сложное" : (cell.amount > 1 || isInert(cell.element) ? "простое" : "одиночный атом"))) + "\n"
 	description += "4. " + msgs["quantitativeComposition"].replace("%1", amountStr) + "\n"
 	description += "5. " + msgs["relativeMolecularMass"].replace("%1", molecularMassStr) + "\n"
 	description += "6. " + msgs["elementsMassRatio"].replace("%1", propStr) + "\n"
@@ -670,39 +637,33 @@ get('/workspace/utils/subjects/chemistry/formulaDescription', function(request, 
 	collection("namesOfFormulas").find(
 	{
 		formula : request.query.chemicalFormula
-	}).toArray(
-			function(err, results)
+	}).toArray(function(err, results)
+	{
+		response.render("workspace/utils/subjects/chemistry/formulaDescription.pug",
+		{
+			data :
 			{
-				response.render("workspace/utils/subjects/chemistry/formulaDescription.pug",
+				info : function()
 				{
-					data :
-					{
-						info : function()
-						{
-						}(),
-						ok : function()
-						{
-						}(),
-						error : function()
-						{
-						}(),
+				}(),
+				ok : function()
+				{
+				}(),
+				error : function()
+				{
+				}(),
 
-						description : request.query.chemicalFormula ? descript(request.query.chemicalFormula,
-								request.query.naming || results[0]
-										|| replaceNormalToSmall(request.query.chemicalFormula),
-								request.query.chemicalElementsLanguage === 'current' ? getUserLanguage(user,
-										"chemicalElementsNames") : 'la_la', getUserLanguage(user, "public/messages"),
-								request.query.signsAfterComma) : "",
-						userLogin : account.login,
-						userSurname : account.surname,
-						userName : account.name,
-						userSecondName : account.secondName
-					},
+				description : request.query.chemicalFormula ? descript(request.query.chemicalFormula, request.query.naming || results[0] || replaceNormalToSmall(request.query.chemicalFormula), request.query.chemicalElementsLanguage === 'current' ? getUserLanguage(user, "chemicalElementsNames") : 'la_la', getUserLanguage(user, "public/messages"), request.query.signsAfterComma) : "",
+				userLogin : account.login,
+				userSurname : account.surname,
+				userName : account.name,
+				userSecondName : account.secondName
+			},
 
-					requestQuery : request.query || {},
-					$msgs$ : getMsgs("ru_ru")
-				})
-			})
+			requestQuery : request.query || {},
+			$msgs$ : getMsgs("ru_ru")
+		})
+	})
 }, [ "workspace.utils.subjects.chemistry.formulaDescription" ])
 
 var chemAPI = {}
@@ -747,28 +708,26 @@ chemAPI.isRadioactive = function(chemElement)
 	return chemElement.id >= 84 && chemElement.id <= 118
 }
 
-get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}',
-		function(request, response, perms, account, user)
+get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}', function(request, response, perms, account, user)
+{
+	response.render("workspace/utils/subjects/chemistry/elementInfo.pug",
+	{
+		data :
 		{
-			response.render("workspace/utils/subjects/chemistry/elementInfo.pug",
-			{
-				data :
-				{
-					userLogin : account.login,
-					userSurname : account.surname,
-					userName : account.name,
-					userSecondName : account.secondName,
+			userLogin : account.login,
+			userSurname : account.surname,
+			userName : account.name,
+			userSecondName : account.secondName,
 
-					chemicalElement : JSON.parse(fs.readFileSync("chemicalElements.json", "utf8"))[request.url
-							.substring(path.length).split(new RegExp("[/\?]"))[6]],
-					chemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
-					chemAPI : chemAPI
-				},
+			chemicalElement : JSON.parse(fs.readFileSync("chemicalElements.json", "utf8"))[request.url.substring(path.length).split(new RegExp("[/\?]"))[6]],
+			chemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
+			chemAPI : chemAPI
+		},
 
-				requestQuery : request.query || {},
-				$msgs$ : getMsgs("ru_ru")
-			})
-		}, [ "workspace.utils.subjects.chemistry.elementInfo" ])
+		requestQuery : request.query || {},
+		$msgs$ : getMsgs("ru_ru")
+	})
+}, [ "workspace.utils.subjects.chemistry.elementInfo" ])
 
 get('/workspace/utils/subjects/chemistry/periodicTable', function(request, response, perms, account, user)
 {
@@ -847,82 +806,79 @@ get('/workspace/utils/subjects/chemistry', function(request, response, perms, ac
 	})
 }, [ "workspace.utils.subjects.chemistry" ])
 
-get(
-		[ '/accounts/management/exists/[a-zA-Z0-9]+', '/accounts/management/exists/[a-zA-Z0-9]+/info/[^/\?]+',
-				'/accounts/management/exists/[a-zA-Z0-9]+/error/[^/\?]+',
-				'/accounts/management/exists/[a-zA-Z0-9]+/ok/[^/\?]+' ], function(request, response, perms, account)
+get([ '/accounts/management/exists/[a-zA-Z0-9]+', '/accounts/management/exists/[a-zA-Z0-9]+/info/[^/\?]+', '/accounts/management/exists/[a-zA-Z0-9]+/error/[^/\?]+', '/accounts/management/exists/[a-zA-Z0-9]+/ok/[^/\?]+' ], function(request, response, perms, account)
+{
+	var path = '/accounts/management/exists';
+	var urlLogin = request.url.substring(path.length).split(new RegExp("[/\?]"))[1];
+	get("accounts", function(err, accounts)
+	{
+		var info = "";
+		var error = function()
 		{
-			var path = '/accounts/management/exists';
-			var urlLogin = request.url.substring(path.length).split(new RegExp("[/\?]"))[1];
-			get("accounts", function(err, accounts)
+			switch (request.url.split('/')[6])
 			{
-				var info = "";
-				var error = function()
-				{
-					switch (request.url.split('/')[6])
-					{
-						case "passwordchangefailed":
-							return "Password changing failed!";
-						default:
-							return "";
-					}
-				}();
-				var ok = function()
-				{
-					switch (request.url.split('/')[6])
-					{
-						case "passwordchanged":
-							return "Password changed!";
-						default:
-							return "";
-					}
-				}();
-				if (accounts.length !== 0)
-					response.render("accounts/management/exists",
-					{
-						data :
-						{
-							info : info,
-							ok : ok,
-							error : error,
-
-							userLogin : account.login,
-							userSurname : account.surname,
-							userName : account.name,
-							userSecondName : account.secondName,
-							accountLogin : urlLogin
-						},
-
-						requestQuery : request.query || {},
-						$msgs$ : getMsgs("ru_ru")
-					});
-				else
-				{
-					response.status(404);
-					response.render("accounts/management/err404",
-					{
-						data :
-						{
-							info : info,
-							ok : ok,
-							error : error,
-
-							userLogin : account.login,
-							userSurname : account.surname,
-							userName : account.name,
-							userSecondName : account.secondName,
-							accountLogin : urlLogin
-						},
-
-						requestQuery : request.query || {},
-						$msgs$ : getMsgs("ru_ru")
-					});
-				}
-			},
+				case "passwordchangefailed":
+					return "Password changing failed!";
+				default:
+					return "";
+			}
+		}();
+		var ok = function()
+		{
+			switch (request.url.split('/')[6])
 			{
-				login : new RegExp("^" + urlLogin + "$", "i")
+				case "passwordchanged":
+					return "Password changed!";
+				default:
+					return "";
+			}
+		}();
+		if (accounts.length !== 0)
+			response.render("accounts/management/exists",
+			{
+				data :
+				{
+					info : info,
+					ok : ok,
+					error : error,
+
+					userLogin : account.login,
+					userSurname : account.surname,
+					userName : account.name,
+					userSecondName : account.secondName,
+					accountLogin : urlLogin
+				},
+
+				requestQuery : request.query || {},
+				$msgs$ : getMsgs("ru_ru")
 			});
-		}, [ "accounts.management.exists" ]);
+		else
+		{
+			response.status(404);
+			response.render("accounts/management/err404",
+			{
+				data :
+				{
+					info : info,
+					ok : ok,
+					error : error,
+
+					userLogin : account.login,
+					userSurname : account.surname,
+					userName : account.name,
+					userSecondName : account.secondName,
+					accountLogin : urlLogin
+				},
+
+				requestQuery : request.query || {},
+				$msgs$ : getMsgs("ru_ru")
+			});
+		}
+	},
+	{
+		login : new RegExp("^" + urlLogin + "$", "i")
+	});
+}, [ "accounts.management.exists" ]);
 
 get('/accounts/management/changepassword/[a-zA-Z0-9]+', function(request, response, perms, account)
 {
@@ -1001,10 +957,8 @@ post('/accounts/management/create', function(request, response, perms, account)
 {
 	if (!request.body)
 		return response.sendStatus(400);
-	var groupsNames = request.body.groupsNames.replace(new RegExp(" ", 'g'), "").replace(new RegExp("\r\n", 'g'), "\n")
-			.replace(new RegExp("\r", 'g'), "\n").split("\n");
-	var perms = request.body.perms.replace(new RegExp(" ", 'g'), "").replace(new RegExp("\r\n", 'g'), "\n").replace(
-			new RegExp("\r", 'g'), "\n").split("\n");
+	var groupsNames = request.body.groupsNames.replace(new RegExp(" ", 'g'), "").replace(new RegExp("\r\n", 'g'), "\n").replace(new RegExp("\r", 'g'), "\n").split("\n");
+	var perms = request.body.perms.replace(new RegExp(" ", 'g'), "").replace(new RegExp("\r\n", 'g'), "\n").replace(new RegExp("\r", 'g'), "\n").split("\n");
 	get("users", function(err, users)
 	{
 		getUserPerms(users[0], function(userPerms)
@@ -1015,8 +969,7 @@ post('/accounts/management/create', function(request, response, perms, account)
 						if (userPerms[v2].indexOf("accounts.management.group.give." + groupsNames[v]) === 0)
 							break;
 						else if (v2 === userPerms.length - 1)
-							return response
-									.redirect('/accounts/management/error/notPermsToGiveGroup/' + groupsNames[v])
+							return response.redirect('/accounts/management/error/notPermsToGiveGroup/' + groupsNames[v])
 			for (var v = 0; v < perms.length; v++)
 				if (perms[v] !== "")
 					for (var v2 = 0; v2 < userPerms.length; v2++)
@@ -1024,8 +977,7 @@ post('/accounts/management/create', function(request, response, perms, account)
 							break;
 						else if (v2 === userPerms.length - 1)
 							return response.redirect('/accounts/management/error/notPermsToGivePerm/' + perms[v])
-			dbInterface.createAccount(new dbInterface.Account(request.body.login, hashCode(request.body.password),
-					groupsNames, perms), request.body.password, function()
+			dbInterface.createAccount(new dbInterface.Account(request.body.login, hashCode(request.body.password), groupsNames, perms), request.body.password, function()
 			{
 				response.redirect('/accounts/management/error/accountAlreadyExists');
 			}, function(cause)
@@ -1279,20 +1231,18 @@ get('/getdata', function(request, response, perms, account, user)
 	console.log(request.query);
 	if (request.query.existOrdersSearch)
 		collection("orders").find(
-				{
-					orderName : new RegExp("^" + toRegExpText(request.query.existOrdersSearch) + "|" + "^"
-							+ toRegExpText(puntoSwitch(account, request.query.existOrdersSearch)), 'i'),
-					login : new RegExp("^" + account.login + "$", "i")
-				}).toArray(function(err, orders)
+		{
+			orderName : new RegExp("^" + toRegExpText(request.query.existOrdersSearch) + "|" + "^" + toRegExpText(puntoSwitch(account, request.query.existOrdersSearch)), 'i'),
+			login : new RegExp("^" + account.login + "$", "i")
+		}).toArray(function(err, orders)
 		{
 			response.end(JSON.stringify(orders));
 		});
 	else if (request.query.hintSearch)
 		collection("hints").find(
-				{
-					hint : new RegExp("^" + toRegExpText(request.query.hintSearch) + "|" + "^"
-							+ toRegExpText(puntoSwitch(account, request.query.hintSearch)), 'i')
-				}).toArray(function(err, hints)
+		{
+			hint : new RegExp("^" + toRegExpText(request.query.hintSearch) + "|" + "^" + toRegExpText(puntoSwitch(account, request.query.hintSearch)), 'i')
+		}).toArray(function(err, hints)
 		{
 			var data = "";
 			for (var v = 0; v < hints.length; v++)
@@ -1302,69 +1252,58 @@ get('/getdata', function(request, response, perms, account, user)
 		});
 	else if (request.query.orderFormSearch)
 		collection("orderForms").find(
-				{
-					$or : [
-							{
-								naming : new RegExp(toRegExpText(request.query.orderFormSearch) + "|"
-										+ toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
-							},
-							{
-								mnn : new RegExp(toRegExpText(request.query.orderFormSearch) + "|"
-										+ toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
-							},
-							{
-								distributor : new RegExp(toRegExpText(request.query.orderFormSearch) + "|"
-										+ toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
-							},
-							{
-								manufacturer : new RegExp(toRegExpText(request.query.orderFormSearch) + "|"
-										+ toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
-							} ]
+		{
+			$or : [
+			{
+				naming : new RegExp(toRegExpText(request.query.orderFormSearch) + "|" + toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
+			},
+			{
+				mnn : new RegExp(toRegExpText(request.query.orderFormSearch) + "|" + toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
+			},
+			{
+				distributor : new RegExp(toRegExpText(request.query.orderFormSearch) + "|" + toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
+			},
+			{
+				manufacturer : new RegExp(toRegExpText(request.query.orderFormSearch) + "|" + toRegExpText(puntoSwitch(account, request.query.orderFormSearch)), 'i')
+			} ]
 
-				}).toArray(
-				function(err, orderForms)
+		}).toArray(function(err, orderForms)
+		{
+			var data = "";
+			var count = 0;
+			var onAllPricesCounted = function()
+			{
+				for (var v = 0; v < orderForms.length; v++)
+					for ( var key in orderForms[v])
+						if (key != '_id')
+							data += v + "_" + key + "=" + orderForms[v][key] + "&";
+				response.end(data);
+			}
+			function func(v)
+			{
+				collection("orderOffers").find(
 				{
-					var data = "";
-					var count = 0;
-					var onAllPricesCounted = function()
-					{
-						for (var v = 0; v < orderForms.length; v++)
-							for ( var key in orderForms[v])
-								if (key != '_id')
-									data += v + "_" + key + "=" + orderForms[v][key] + "&";
-						response.end(data);
-					}
-					function func(v)
-					{
-						collection("orderOffers").find(
-								{
-									orderForm : new RegExp(toRegExpText(orderForms[v].naming) + "|"
-											+ toRegExpText(puntoSwitch(account, orderForms[v].naming)), 'i')
-								}).toArray(
-								function(err, orderOffers)
-								{
-									for (var v2 = 0; v2 < orderOffers.length; v2++)
-										if (typeof (orderOffers[v2].price) === 'number'
-												&& !Number.isNaN(orderOffers[v2].price))
-											if (typeof (orderForms[v].minPrice) === 'number'
-													&& !Number.isNaN(orderForms[v].minPrice))
-												orderForms[v].minPrice = Math.min(orderForms[v].minPrice,
-														orderOffers[v2].price);
-											else orderForms[v].minPrice = orderOffers[v2].price;
-									count++;
-									if (count == orderForms.length)
-										onAllPricesCounted();
-								});
-					}
-					for (var vv = 0; vv < orderForms.length; vv++)
-						func(vv);
+					orderForm : new RegExp(toRegExpText(orderForms[v].naming) + "|" + toRegExpText(puntoSwitch(account, orderForms[v].naming)), 'i')
+				}).toArray(function(err, orderOffers)
+				{
+					for (var v2 = 0; v2 < orderOffers.length; v2++)
+						if (typeof (orderOffers[v2].price) === 'number' && !Number.isNaN(orderOffers[v2].price))
+							if (typeof (orderForms[v].minPrice) === 'number' && !Number.isNaN(orderForms[v].minPrice))
+								orderForms[v].minPrice = Math.min(orderForms[v].minPrice, orderOffers[v2].price);
+							else orderForms[v].minPrice = orderOffers[v2].price;
+					count++;
+					if (count == orderForms.length)
+						onAllPricesCounted();
 				});
+			}
+			for (var vv = 0; vv < orderForms.length; vv++)
+				func(vv);
+		});
 	else if (request.query.orderOfferSearch)
 		collection("orderOffers").find(
-				{
-					orderForm : new RegExp(toRegExpText(request.query.orderOfferSearch) + "|"
-							+ toRegExpText(puntoSwitch(account, request.query.orderOfferSearch)), 'i')
-				}).toArray(function(err, orderOffers)
+		{
+			orderForm : new RegExp(toRegExpText(request.query.orderOfferSearch) + "|" + toRegExpText(puntoSwitch(account, request.query.orderOfferSearch)), 'i')
+		}).toArray(function(err, orderOffers)
 		{
 			var data = "";
 			for (var v = 0; v < orderOffers.length; v++)
@@ -1375,11 +1314,10 @@ get('/getdata', function(request, response, perms, account, user)
 		});
 	else if (request.query.orderName)
 		collection("orders").find(
-				{
-					orderName : new RegExp(toRegExpText(request.query.orderName) + "|"
-							+ toRegExpText(puntoSwitch(account, request.query.orderName)), 'i'),
-					login : new RegExp("^" + account.login + "$", "i")
-				}).toArray(function(err, orders)
+		{
+			orderName : new RegExp(toRegExpText(request.query.orderName) + "|" + toRegExpText(puntoSwitch(account, request.query.orderName)), 'i'),
+			login : new RegExp("^" + account.login + "$", "i")
+		}).toArray(function(err, orders)
 		{
 			var data = "";
 			if (orders[0] ? orders[0].data : false)
@@ -1567,38 +1505,34 @@ post('/postdata', function(request, response, perms, account)
 	else if (request.body.orderName && request.body.orderData)
 	{
 		collection("orders").find(
+		{
+			orderName : new RegExp(toRegExpText(request.body.orderName) + "|" + toRegExpText(puntoSwitch(account, request.body.orderName)), 'i'),
+			login : new RegExp("^" + account.login + "$", "i")
+		}).toArray(function(err, objects)
+		{
+			var orderData = objects[0] && objects[0].data instanceof Array ? objects[0].data : [];
+			var vars = request.body.orderData.split(";");
+			for (var v = 0; v < vars.length; v++)
+			{
+				if (!orderData[vars[v].split("=")[0].split("_")[0]])
+					orderData[vars[v].split("=")[0].split("_")[0]] = {};
+				orderData[vars[v].split("=")[0].split("_")[0]][vars[v].split("=")[0].split("_")[1]] = vars[v].split("=")[1];
+			}
+			collection("orders").findOneAndUpdate(
+			{
+				orderName : new RegExp(toRegExpText(request.body.orderName) + "|" + toRegExpText(puntoSwitch(account, request.body.orderName)), 'i'),
+				login : new RegExp("^" + account.login + "$", "i")
+			},
+			{
+				$set :
 				{
-					orderName : new RegExp(toRegExpText(request.body.orderName) + "|"
-							+ toRegExpText(puntoSwitch(account, request.body.orderName)), 'i'),
-					login : new RegExp("^" + account.login + "$", "i")
-				}).toArray(
-				function(err, objects)
-				{
-					var orderData = objects[0] && objects[0].data instanceof Array ? objects[0].data : [];
-					var vars = request.body.orderData.split(";");
-					for (var v = 0; v < vars.length; v++)
-					{
-						if (!orderData[vars[v].split("=")[0].split("_")[0]])
-							orderData[vars[v].split("=")[0].split("_")[0]] = {};
-						orderData[vars[v].split("=")[0].split("_")[0]][vars[v].split("=")[0].split("_")[1]] = vars[v]
-								.split("=")[1];
-					}
-					collection("orders").findOneAndUpdate(
-							{
-								orderName : new RegExp(toRegExpText(request.body.orderName) + "|"
-										+ toRegExpText(puntoSwitch(account, request.body.orderName)), 'i'),
-								login : new RegExp("^" + account.login + "$", "i")
-							},
-							{
-								$set :
-								{
-									data : orderData
-								}
-							},
-							{
-								upsert : true
-							});
-				})
+					data : orderData
+				}
+			},
+			{
+				upsert : true
+			});
+		})
 	}
 	else return response.status(400);
 }, [ "workspace.student" ]);
@@ -1636,14 +1570,304 @@ get('/workspace/teacher', function(request, response, perms, account)
 				userName : account.name,
 				userSecondName : account.secondName,
 
-				menues : getGlobalMenu()
+				menues :
+				{
+					utils : getGlobalMenu().utils
+				}
 			},
 
 			requestQuery : request.query || {},
 			$msgs$ : getMsgs("ru_ru")
 		})
 	})
-}, [ "workspace.teacher" ]);
+}, [ "workspace.teacher" ])
+
+var defaultTestSettings = {}
+var defaultTestingSettings = {}
+
+get('/testing', function(request, response, perms, account)
+{
+	collection("testings").find(
+	{
+		_id : new mongoDBmodule.ObjectID(request.query.id)
+	}).toArray(function(err, testings)
+	{
+		if (testings[0])
+			collection("tests").find(
+			{
+				_id : new mongoDBmodule.ObjectID(testings[0].testId)
+			}).toArray(function(err, tests)
+			{
+				if (tests[0])
+					if (request.query.questionNumber >= 0 && request.query.questionNumber < tests[0].testQuestions.length)
+						collection("testsSettings").find(
+						{
+							_id : new mongoDBmodule.ObjectID(testings[0].testSettingsId)
+						}).toArray(function(err, testsSettings)
+						{
+							collection("testingsSettings").find(
+							{
+								_id : new mongoDBmodule.ObjectID(testings[0].testingSettingsId)
+							}).toArray(function(err, testingsSettings)
+							{
+								response.render("testing",
+								{
+									data :
+									{
+										userLogin : account.login,
+										userSurname : account.surname,
+										userName : account.name,
+										userSecondName : account.secondName,
+
+										test :
+										{
+											questionsCount : tests[0].testQuestions.length,
+											testQuestionNumber : request.query.questionNumber,
+											testQuestion : tests[0].testQuestions[request.query.questionNumber]
+										},
+										testing : testings[0],
+										testSettings : testsSettings[0] || defaultTestSettings,
+										testingSettings : testingsSettings[0] || defaultTestingSettings
+									},
+
+									requestQuery : request.query || {},
+									$msgs$ : getMsgs("ru_ru")
+								})
+							})
+						})
+					else response.render('questionNotExist',
+					{
+						data :
+						{
+							userLogin : account.login,
+							userSurname : account.surname,
+							userName : account.name,
+							userSecondName : account.secondName,
+
+							requestedQuestion : request.query.questionNumber
+						},
+
+						requestQuery : request.query || {},
+						$msgs$ : getMsgs("ru_ru")
+					})
+				else response.render('testNotExist',
+				{
+					data :
+					{
+						userLogin : account.login,
+						userSurname : account.surname,
+						userName : account.name,
+						userSecondName : account.secondName,
+
+						requestedTest : testings[0].testId
+					},
+
+					requestQuery : request.query || {},
+					$msgs$ : getMsgs("ru_ru")
+				})
+			})
+		else response.render('testingNotExist',
+		{
+			data :
+			{
+				userLogin : account.login,
+				userSurname : account.surname,
+				userName : account.name,
+				userSecondName : account.secondName,
+
+				requestedTesting : request.query.id
+			},
+
+			requestQuery : request.query || {},
+			$msgs$ : getMsgs("ru_ru")
+		})
+	})
+}, [])
+
+post('/startTesting', function(request, response, perms, account)
+{
+	var testing = (
+	{
+		initiatorLogin : account.login,
+		date : new Date(),
+
+		testingLogin : request.body.testingLogin,
+
+		minimalStartingDate : request.body.minimalStartingDate,
+		maximalStartingDate : request.body.maximalStartingDate,
+
+		minimalStartingTime : request.body.minimalStartingTime,
+		maximalStartingTime : request.body.maximalStartingTime,
+
+		minimalEndingDate : request.body.minimalEndingDate,
+		maximalEndingDate : request.body.maximalEndingDate,
+
+		minimalEndingTime : request.body.minimalEndingTime,
+		maximalEndingTime : request.body.maximalEndingTime,
+
+		timeLimit : request.body.timeLimit,
+
+		testId : request.body.testId,
+		testSettingsId : request.body.testSettingsId,
+		testingSettingsId : request.body.testingSettingsId
+	/*
+	 * ,
+	 * 
+	 * testingId : "(" + hashCode(account.login) + ")-(" +
+	 * hashCode(request.body.testingLogin) + ")-(" + hashCode(new Date()) +
+	 * ")-(" + request.body.testId + ")-(" + Math.floor("" + Math.random() *
+	 * 1000000) + ")"
+	 */
+	})
+	collection("testings").insertOne(testing)
+	console.log(request.body)
+	console.log(testing)
+	response.end('ok')
+}, [])
+
+get('/testCreation', function(request, response, perms, account)
+{
+	response.render("testCreation",
+	{
+		data :
+		{
+			userLogin : account.login,
+			userSurname : account.surname,
+			userName : account.name,
+			userSecondName : account.secondName
+		},
+
+		requestQuery : request.query || {},
+		$msgs$ : getMsgs("ru_ru")
+	})
+}, [])
+
+get('/test', function(request, response, perms, account)
+{
+	collection("tests").find(
+	{
+		_id : new mongoDBmodule.ObjectID(request.query.id)
+	}).toArray(function(err, tests)
+	{
+		response.render("test",
+		{
+			data :
+			{
+				userLogin : account.login,
+				userSurname : account.surname,
+				userName : account.name,
+				userSecondName : account.secondName,
+
+				test : tests[0]
+			},
+
+			requestQuery : request.query || {},
+			$msgs$ : getMsgs("ru_ru")
+		})
+	})
+}, [])
+
+get('/testings', function(request, response, perms, account)
+{
+	collection("testings").find(request.query.id ?
+	{
+		testId : request.query.id
+	} : {}).toArray(function(err, testings)
+	{
+		var testingsInfo = []
+		for (var v = 0; v < testings.length; v++)
+			testingsInfo.push(
+			{
+				testId : testings[v].testId,
+				id : testings[v]._id,
+				initiatorLogin : testings[v].initiatorLogin,
+				testingLogin : testings[v].testingLogin
+			})
+
+		response.render("testings",
+		{
+			data :
+			{
+				userLogin : account.login,
+				userSurname : account.surname,
+				userName : account.name,
+				userSecondName : account.secondName,
+
+				testingsInfo : testingsInfo
+			},
+
+			requestQuery : request.query || {},
+			$msgs$ : getMsgs("ru_ru")
+		})
+	})
+}, [])
+
+get('/tests', function(request, response, perms, account)
+{
+	collection("tests").find().toArray(function(err, tests)
+	{
+		var testsInfo = []
+		for (var v = 0; v < tests.length; v++)
+			testsInfo.push(
+			{
+				name : tests[v].name,
+				authors : tests[v].authors,
+				version : tests[v].version,
+				id : tests[v]._id,
+				comitter : tests[v].comitterLogin
+			})
+
+		response.render("tests",
+		{
+			data :
+			{
+				userLogin : account.login,
+				userSurname : account.surname,
+				userName : account.name,
+				userSecondName : account.secondName,
+
+				testsInfo : testsInfo
+			},
+
+			requestQuery : request.query || {},
+			$msgs$ : getMsgs("ru_ru")
+		})
+	})
+}, [])
+
+post('/testCreation', function(request, response, perms, account)
+{
+	var testDB = request.body
+	console.log(request.body)
+	try
+	{
+		testDB.object = JSON.parse(testDB.code)
+	}
+	catch (e)
+	{
+		return response.end(e + "")
+	}
+	testDB.json = JSON.stringify(testDB.object)
+	for ( var v in testDB.object)
+		testDB[v] = testDB.object[v]
+	testDB.comitterLogin = account.login
+	collection("tests").insertOne(testDB)
+	return response.end("ok")
+}, [])
+
+post('/testing', function(request, response, perms, account)
+{
+	collection("testingsData").insertOne(
+	{
+		testingId : request.body.testingId,
+		questionNumber : request.body.questionNumber,
+		date : new Date(),
+		userAnswer : request.body.userAnswer,
+		userLogin : account.login
+	})
+	console.log(request.body)
+	response.end('ok')
+}, [])
 
 get('/workspace/dataCollector', function(request, response, perms, account)
 {
@@ -1659,8 +1883,8 @@ get('/workspace/dataCollector', function(request, response, perms, account)
 
 		requestQuery : request.query || {},
 		$msgs$ : getMsgs("ru_ru")
-	});
-}, [ "workspace.dataCollector" ]);
+	})
+}, [ "workspace.dataCollector" ])
 
 get('/workspace/admin', function(request, response, perms, account)
 {
@@ -1699,8 +1923,13 @@ application.use(function(request, response, next)
 					userLogin : accounts[0].login,
 					userSurname : accounts[0].surname,
 					userName : accounts[0].name,
-					userSecondName : accounts[0].secondName
-				} : {},
+					userSecondName : accounts[0].secondName,
+
+					requestedUrl : request.url.substring(path.length)
+				} :
+				{
+					requestedUrl : request.url.substring(path.length)
+				},
 
 				requestQuery : request.query || {},
 				$msgs$ : getMsgs("ru_ru")
@@ -1774,8 +2003,7 @@ var getAccountPerms = exports.getAccountPerms = function(account, func)
 						if (groups[0])
 							for (var v = 0; v < groups[0].allPerms.length; v++)
 								allPerms.push(groups[0].allPerms[v]);
-						else console.error("getAccountPerms: Group with name '" + account.groupsNames[v]
-								+ "' doesn't exist!");
+						else console.error("getAccountPerms: Group with name '" + account.groupsNames[v] + "' doesn't exist!");
 						groupsAndMembersOk++
 						check(groupsAndMembersOk)
 					},
@@ -1821,8 +2049,7 @@ var getMemberPerms = exports.getMemberPerms = function(member, func)
 					if (groups[0])
 						for (var v = 0; v < groups[0].allPerms.length; v++)
 							allPerms.push(groups[0].allPerms[v]);
-					else console.error("getAccountPerms: Group with name '" + member.groupsNames[v]
-							+ "' doesn't exist!");
+					else console.error("getAccountPerms: Group with name '" + member.groupsNames[v] + "' doesn't exist!");
 					groupsOk++
 					check(groupsOk)
 				},
@@ -1858,52 +2085,49 @@ var loadedGroups = [];
 
 var permsUpdate = exports.permsUpdate = function(onUpdated)
 {
-	collection("groups").find().toArray(
-			function(err, groups)
-			{
-				loadedGroups = [];
+	collection("groups").find().toArray(function(err, groups)
+	{
+		loadedGroups = [];
 
-				for (var v = 0; v < groups.length; v++)
-					loadedGroups.push(groups[v]);
+		for (var v = 0; v < groups.length; v++)
+			loadedGroups.push(groups[v]);
 
-				function calcAllPerms(stack, group)
+		function calcAllPerms(stack, group)
+		{
+			var allPerms = [];
+			var stackWithThis = [];
+			for (var v = 0; v < stack.length; v++)
+				if (stack[v] != group.name)
+					stackWithThis.push(stack[v]);
+				else
 				{
-					var allPerms = [];
-					var stackWithThis = [];
-					for (var v = 0; v < stack.length; v++)
-						if (stack[v] != group.name)
-							stackWithThis.push(stack[v]);
-						else
-						{
-							console.error("PermsUpdate: Group with name '" + group.name + "' already in stack '"
-									+ stack + "'!");
-							return group.allPerms = allPerms;
-						}
-					stackWithThis.push(group.name);
-					for (var v = 0; v < group.perms.length; v++)
-						allPerms.push(group.perms[v]);
-					for (var v = 0; v < group.groupsNames.length; v++)
-					{
-						var group;
-						for (var v2 = 0; v2 < loadedGroups.length; v2++)
-							if (loadedGroups[v2].name == group.groupsNames[v])
-								group = loadedGroups[v2];
-						if (group)
-						{
-							var allPermsOf = calcAllPerms(stackWithThis, group);
-							for (var v = 0; v < allPermsOf.length; v++)
-								allPerms.push(allPermsOf[v]);
-						}
-						else console
-								.error("PermsUpdate: Group with name '" + group.groupsNames[v] + "' doesn't exist!");
-					}
-					return allPerms;
+					console.error("PermsUpdate: Group with name '" + group.name + "' already in stack '" + stack + "'!");
+					return group.allPerms = allPerms;
 				}
-				for (var v = 0; v < loadedGroups.length; v++)
-					loadedGroups[v].allPerms = calcAllPerms([], loadedGroups[v]);
-				if (onUpdated)
-					onUpdated(loadedGroups);
-			});
+			stackWithThis.push(group.name);
+			for (var v = 0; v < group.perms.length; v++)
+				allPerms.push(group.perms[v]);
+			for (var v = 0; v < group.groupsNames.length; v++)
+			{
+				var group;
+				for (var v2 = 0; v2 < loadedGroups.length; v2++)
+					if (loadedGroups[v2].name == group.groupsNames[v])
+						group = loadedGroups[v2];
+				if (group)
+				{
+					var allPermsOf = calcAllPerms(stackWithThis, group);
+					for (var v = 0; v < allPermsOf.length; v++)
+						allPerms.push(allPermsOf[v]);
+				}
+				else console.error("PermsUpdate: Group with name '" + group.groupsNames[v] + "' doesn't exist!");
+			}
+			return allPerms;
+		}
+		for (var v = 0; v < loadedGroups.length; v++)
+			loadedGroups[v].allPerms = calcAllPerms([], loadedGroups[v]);
+		if (onUpdated)
+			onUpdated(loadedGroups);
+	});
 }
 
 init();

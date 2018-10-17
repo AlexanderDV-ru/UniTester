@@ -1,7 +1,7 @@
 extends /headered
 
 block title
-	title #{$msgs$.sitename} - #{$msgs$.error_404}
+	title #{$msgs$.sitename} - #{$msgs$.error_404} - #{$msgs$.sitename}
 
 block inHead0
 	link(rel='stylesheet', href='/stylesheets/style2.css')
@@ -11,4 +11,4 @@ block content
 	br
 	label #{$msgs$.thisPageNotExists}
 	br
-	label #{$msgs$.requestedPage}
+	label #{$msgs$.requestedPage.replace("%0",data.requestedUrl)}

@@ -42,6 +42,46 @@
 'cost': 'Стоимость'
 'id': 'ID'
 
+//Testing
+'testing': 'Тестирование'
+'exit': 'Выход'
+'saveTest': 'Сохранить тест'
+'questionNumber': 'Вопрос №'
+'back': 'Назад'
+'next': 'Далее'
+'questionsBeforeThisNotExist': 'Вопросов перед этим не существует.'
+'questionsAfterThisNotExist': 'Вопросов после этого не существует.'
+'inThisTestCantGoToAllAnswers': 'В этом тесте нельзя переходить ко всем вопросам.'
+'clickToPause': 'Нажмите, чтобы поставить на паузу.'
+'clickToUnpause': 'Нажмите, чтобы снять с паузы.'
+'fieldForTextAnswerEnter': 'Поле для ввода текста ответа'
+'answerVariantNumber': 'Вариант ответа № '
+
+'unlimited': 'Неограниченно'
+
+'testName': 'Название теста'
+'testVersion': 'Версия теста'
+'testAuthors': 'Авторы теста'
+
+'testCreatedSuccessfully': 'Тест успешно создан'
+
+'startTesting': 'Запустить тестирование'
+'openTesting': 'Открыть тестирование'
+'getTestings': 'Получить тестирования'
+
+//
+'error_testNotExist': 'Ошибка! Теста не существует'
+'error_questionNotExist': 'Ошибка! Вопроса не существует'
+
+'thisPageNotExists': 'Данной страницы не существует!'
+'requestedPage': 'Запрошенная страница - '%0''
+
+'thisTestNotExists': 'Данного теста не существует!'
+'requestedTest': 'Запрошенный тест - '%0''
+
+'thisQuestionNotExists': 'Данного вопроса не существует!'
+'requestedQuestion': 'Запрошенный вопрос - '%0''
+
 'chemistryUtils': 'Химические утилиты'
 
 'checking': 'Проверка'

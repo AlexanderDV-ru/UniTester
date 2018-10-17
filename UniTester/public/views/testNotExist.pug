@@ -1,0 +1,14 @@
+extends /headered
+
+block title
+	title #{$msgs$.sitename} - #{$msgs$.error_testNotExist} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	h1 #{$msgs$.error_testNotExist}:
+	br
+	label #{$msgs$.thisTestNotExists}
+	br
+	label #{$msgs$.requestedTest.replace("%0",data.requestedTest)}

@@ -1,0 +1,11 @@
+extends /headered
+
+block title
+	title #{data.test.name} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	button(onclick="sendRequest('post','/startTesting','testId="+data.test._id+"')") #{$msgs$.startTesting}
+	button(onclick="window.location.replace('/testings?testId="+data.test._id+"')") #{$msgs$.getTestings}

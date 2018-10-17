@@ -1,0 +1,120 @@
+extends /headered
+
+block title
+	title #{$msgs$.testing} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	script.
+		function goToQuestion(number)
+		{
+			requestQuery.questionNumber=number
+			function func(obj, path)
+			{
+				path=(path===undefined?"":path)
+				var q=""
+				if(typeof(obj) === "object")
+					for(var v in obj)
+						q+=path+v+"="+func(obj[v], path+v+".")+"&"
+				else if(typeof(obj) !== "function")
+					q=obj+""
+				return q
+			}
+			window.location.search='?'+func(requestQuery)
+		}
+		function save()
+		{
+			sendRequest('post','/testing','selected='+JSON.stringify({userAnswer:getUserAnswer()}))
+		}
+		var testElText
+		function timerClick(th)
+		{
+			var testEl=document.getElementById('test')
+			if(th.getAttribute('class').indexOf('activeCSS')===-1)
+			{
+				th.setAttribute('class',th.getAttribute('class')+' activeCSS')
+				testElText=testEl.innerHTML
+				testEl.innerHTML=""
+				th.setAttribute('title',$msgs$.clickToUnpause)
+			}
+			else
+			{
+				th.setAttribute('class',th.getAttribute('class').replace('activeCSS',''))
+				testEl.innerHTML=testElText
+				th.setAttribute('title',$msgs$.clickToPause)
+			}
+		}
+	button#timer.greenButton(onclick="timerClick(this)" title=$msgs$.clickToPause)
+	div#test
+		table
+			tr
+				- for(var v=0;v<data.test.questionsCount;v++)
+					td
+						button.greenButton(disabled=!data.testSettings.canGoToAllAnswers title=!data.testSettings.canGoToAllAnswers?$msgs$.inThisTestCantGoToAllAnswers:undefined onclick="save();goToQuestion("+v+")")!= v
+		table
+			tr
+				td
+					button#back.greenButton(disabled=data.test.testQuestionNumber<=0 title=data.test.testQuestionNumber<=0?$msgs$.questionsBeforeThisNotExist:undefined onclick="save();goToQuestion(Number.parseInt(requestQuery.questionNumber)-1)") #{$msgs$.back}
+				td
+					button#next.greenButton(disabled=data.test.testQuestionNumber>=data.test.questionsCount-1 title=data.test.testQuestionNumber>=data.test.questionsCount-1?$msgs$.questionsAfterThisNotExist:undefined onclick="save();goToQuestion(Number.parseInt(requestQuery.questionNumber)+1)") #{$msgs$.next}
+		div.question(style="margin: 20px;") #{$msgs$.questionNumber} #{data.test.testQuestionNumber}
+			div!= data.test.testQuestion.question.html
+			- if(data.test.testQuestion.type==='chooseOne')
+				- for(var v=0;v<data.test.testQuestion.answerVariants.length;v++)
+					button.greenButton.answerVariant(title=$msgs$.answerVariantNumber+v onclick="var vs=document.getElementsByClassName('answerVariant');for(var v=0;v<vs.length;v++)vs[v].setAttribute('class',vs[v].getAttribute('class').replace('activeCSS',''));this.setAttribute('class',this.getAttribute('class')+' activeCSS');")!= data.test.testQuestion.answerVariants[v].html
+				script.
+					function getUserAnswer()
+					{
+						return document.getElementsByClassName('answerVariant activeCSS')[0].textContent
+					}
+			- if(data.test.testQuestion.type==='enterText')
+				input#answerEnter(title=$msgs$.fieldForTextAnswerEnter)
+				script.
+					function getUserAnswer()
+					{
+						return document.getElementById('answerEnter').value
+					}
+			- if(data.test.testQuestion.type==='selectMultiple')
+				- for(var v=0;v<data.test.testQuestion.answerVariants.length;v++)
+					button.greenButton.answerVariant(title=$msgs$.answerVariantNumber+v onclick="if(this.getAttribute('class').indexOf('activeCSS')===-1)this.setAttribute('class',this.getAttribute('class')+' activeCSS');else this.setAttribute('class',this.getAttribute('class').replace('activeCSS',''));")!= data.test.testQuestion.answerVariants[v].html
+				script.
+					function getUserAnswer()
+					{
+						var answers=[]
+						var vs=document.getElementsByClassName('answerVariant activeCSS')
+						for(var v=0;v<vs.length;v++)
+							answers.push(vs[v].textContent)
+						return answers
+					}
+		script.
+			var time=#{(data.testing.startDate instanceof Date)&&typeof(data.testing.timeLimit)==="number"?Math.min(data.testing.maximalEndingDate?data.testing.maximalEndingDate.getTime():Infinity, data.testing.startDate.getTime()+data.testing.timeLimit):"'unlimited'"}
+			function toSigns(number, signs)
+			{
+				number=number+""
+				signs=signs||2
+				for(;number.length<signs;)
+					number="0"+number
+				return number
+			}
+			var g=false
+			function lengthed(v)
+			{
+				g=g||v.indexOf("00")!==0
+				return !g?"":v
+			}
+			function recalc()
+			{
+				if(time==="unlimited")
+					return document.getElementById("timer").textContent=$msgs$.unlimited
+				g=false
+				var timeTo=new Date(time-new Date().getTime())
+				return document.getElementById("timer").textContent=lengthed(toSigns(timeTo.getFullYear()-1970)+".")+lengthed(toSigns(timeTo.getMonth())+".")+lengthed(toSigns(timeTo.getDate()-1)+" ")+lengthed(toSigns(timeTo.getHours()-5)+":")+lengthed(toSigns(timeTo.getMinutes())+" ")+lengthed(toSigns(timeTo.getSeconds()))
+			}
+			recalc()
+			setInterval(recalc, 1000)
+		
+			
+		button#saveTest.greenButton(onclick="save()") #{$msgs$.saveTest}
+		button#exit.greenButton(onclick="save();window.location.pathname='/'") #{$msgs$.exit}

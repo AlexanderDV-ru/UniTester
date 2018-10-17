@@ -1,0 +1,11 @@
+extends /headered
+
+block title
+	title #{$msgs$.testCreation} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	- for(var v=0;v<data.testsInfo.length;v++)
+		button(onclick="window.location.replace('/test?id="+data.testsInfo[v].id+"')") #{data.testsInfo[v].name} v#{data.testsInfo[v].version} by #{data.testsInfo[v].authors}, comitted by #{data.testsInfo[v].comitter}, id='#{data.testsInfo[v].id}'

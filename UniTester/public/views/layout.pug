@@ -25,6 +25,7 @@ html
 			include /protection
 			script!= 'var $msgs$='+JSON.stringify($msgs$)
 			include /protection
+			script!= 'var requestQuery='+JSON.stringify(requestQuery)
 			script. 
 				var getMsg=function(msg)
 				{

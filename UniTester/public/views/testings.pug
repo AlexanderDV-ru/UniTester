@@ -1,0 +1,11 @@
+extends /headered
+
+block title
+	title #{$msgs$.testings} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	- for(var v=0;v<data.testingsInfo.length;v++)
+		button(onclick="window.location.replace('/testing?id="+data.testingsInfo[v].id+"&questionNumber=0')") #{$msgs$.openTesting} '#{data.testingsInfo[v].id}'
