@@ -1,7 +1,7 @@
 extends /headered
 
 block title
-	title #{$msgs$.sitename} - #{$msgs$.periodicTable} - #{$msgs$.sitename}
+	title #{$msgs$.periodicTable} - #{$msgs$.sitename}
 
 block inHead0
 	link(rel='stylesheet', href='/stylesheets/style2.css')
@@ -20,7 +20,7 @@ block content
 	- for(var v=0;v<unspecialShowables.length;v++)
 		- showables.push(unspecialShowables[v])
 		
-	- var typeIndicators={metal:"lightgray",nonmetal:"rgb(255,100,100)",lantanoid:"lightblue",actinoid:"lightpink",superactinoid:"rgb(240,190,125)",inert:"rgb(255,150,255)"}
+	- var typeIndicators={metal:"lightgray",nonmetal:"rgb(255,100,100)",lantanoid:"lightblue",actinoid:"lightpink",superactinoid:"rgb(240,190,125)",superactinoid2:"rgb(0,190,125)",inert:"rgb(255,150,255)"}
 		
 	- function createChemicalElementCell(element)
 		td.element(style="position: relative;width: 100%;height: 100%;")
@@ -53,13 +53,13 @@ block content
 							table.tableInTd
 								tr(style="width: 100%;")
 									td.name-element(align="left" style="width: 33%;")
-										span(style="font-size: 11px;") #{element.name}
+										span(style="font-size: 11px;") #{data.chemicalElementsNames["la_la"]?data.chemicalElementsNames["la_la"][element.symbol]:"Error"}
 					tr(style="width: 100%;")
 						td
 							table.tableInTd
 								tr(style="width: 100%;")
 									td.localizedName-element(align="left" style="width: 33%;")
-										span(style="font-size: 11px;") #{data.chemicalElementsNames[element.name]}
+										span(style="font-size: 11px;") #{data.localizedChemicalElementsNames[element.symbol]}
 					- for(var v in element)
 						- var exists=false
 						- for(var v1=0;v1<specialShowables.length;v1++)
@@ -74,11 +74,16 @@ block content
 												span(style="font-size: 11px;") #{element[v]}
 	- var elementsTable=[], advTable={}
 	- for(var v in data.chemicalElements)
-		- var name=data.chemAPI.isLantanoid(data.chemicalElements[v])?"Lantanoid":data.chemAPI.isActinoid(data.chemicalElements[v])?"Actinoid":data.chemAPI.isSuperactinoid(data.chemicalElements[v])?"Superactinoid":""
+		- var name=data.chemAPI.isLantanoid(data.chemicalElements[v])?"Lantanoid":data.chemAPI.isActinoid(data.chemicalElements[v])?"Actinoid":data.chemAPI.isSuperactinoid(data.chemicalElements[v])?"Superactinoid":data.chemAPI.isSuperactinoid2(data.chemicalElements[v])?"Superactinoid2":""
 		- if(name!=="")
 			- if(!advTable[name])
 				- advTable[name]=[]
 			- advTable[name].push(data.chemicalElements[v])
+			- 
+			- if(!elementsTable[data.chemicalElements[v].period-1])
+				- elementsTable[data.chemicalElements[v].period-1]=[]
+			- if(elementsTable[data.chemicalElements[v].period-1][elementsTable[data.chemicalElements[v].period-1].length-1]!==null)
+				- elementsTable[data.chemicalElements[v].period-1].push(null)
 		- else
 			- if(!elementsTable[data.chemicalElements[v].period-1])
 				- elementsTable[data.chemicalElements[v].period-1]=[]
@@ -102,8 +107,13 @@ block content
 			- for(var v in advTable)
 				tr
 					th #{v}
-					- for(var v1=0;v1<advTable[v].length;v1++)
-						- createChemicalElementCell(advTable[v][v1])
+					td
+						table(style="max-width: 0px;")
+							- var maxRowWidth=17
+							- for(var v2=0;v2<advTable[v].length/maxRowWidth;v2++)
+								tr
+									- for(var v1=v2*maxRowWidth;v1<(v2+1)*maxRowWidth;v1++)
+										- createChemicalElementCell(advTable[v][v1])
 	script.
 		function changePropOf(name,prop,value, units)
 		{

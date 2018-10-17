@@ -7,12 +7,13 @@ var fs = exports.fs = require('fs')
 var bodyParser = require("body-parser")
 var iconv = require('iconv-lite')
 var accepts = require('accepts')
+var packageJson = require('./package.json')
 
 var application = express()
 
-var programName = exports.programName = "UniTester"
-var programVersion = exports.programVersion = "0.3.7a"
-var programAuthors = exports.programAuthors = "AlexanderDV"
+var programName = exports.programName = packageJson.name
+var programVersion = exports.programVersion = packageJson.version
+var programAuthors = exports.programAuthors = packageJson.authors
 var program = exports.program = programName + " v" + programVersion + " by " + programAuthors
 
 var urlencodedParser = bodyParser.urlencoded(
@@ -63,20 +64,21 @@ var hashCode = exports.hashCode = function(object)
 	return hash
 }
 
-function getMsgs(language, path)
+var getMsgs = exports.getMsgs = function(language, path)
 {
 	var messages = fs.readFileSync((path ? path : "public/messages") + "/" + language + ".lang", "utf8").split("\n")
+	//console.log(messages)
 	var msgs = {}
 	for (var v = 0; v < messages.length; v++)
 		if (messages[v].indexOf("//") !== -1 ? messages[v].indexOf("//") > messages[v].indexOf("'") : true)
-			if (messages[v].indexOf("'") !== -1 && messages[v].indexOf("': '") !== -1)
-				if (messages[v].indexOf("'") < messages[v].indexOf("': '"))
-					if (messages[v].indexOf("': '") + "': '".length < messages[v].lastIndexOf("'"))
+			if (messages[v].indexOf("'") !== -1 && messages[v].split(/':[\t ]+'/).length > 1)
+				if (messages[v].indexOf("'") < messages[v].split(/':[\t ]+'/)[0].length)
+					if (messages[v].indexOf(/':[\t ]+'/) + (messages[v].length-messages[v].replace(/':[\t ]+'/,'').length) < messages[v].lastIndexOf("'"))
 					{
-						var key = messages[v].substring(messages[v].indexOf('\'') + 1).split("': '")[0]
-						var value = messages[v].substring(0, messages[v].lastIndexOf('\'')).split("': '")[1]
+						var key = messages[v].substring(messages[v].indexOf('\'') + 1).split(/':[\t ]+'/)[0]
+						var value = messages[v].substring(0, messages[v].lastIndexOf('\'')).split(/':[\t ]+'/)[1]
 						for ( var key2 in msgs)
-							value = value.replace(new RegExp("\\$msg\\." + key2 + "\\$", "g"), msgs[key2])
+							value = value.replace(new RegExp("\\#\\{\\$msgs\\$\\." + key2 + "\\}", "g"), msgs[key2])
 						msgs[key] = value
 					}
 	return msgs
@@ -700,12 +702,16 @@ chemAPI.isActinoid = function(chemElement)
 }
 chemAPI.isSuperactinoid = function(chemElement)
 {
-	return chemElement.id >= 121 && chemElement.id <= 135
+	return chemElement.id >= 121 && chemElement.id <= 153
+}
+chemAPI.isSuperactinoid2 = function(chemElement)
+{
+	return chemElement.id >= 171 && chemElement.id <= 203
 }
 
 chemAPI.isRadioactive = function(chemElement)
 {
-	return chemElement.id >= 84 && chemElement.id <= 118
+	return chemElement.id >= 84 || chemElement.mass >= 209
 }
 
 get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}', function(request, response, perms, account, user)
@@ -720,7 +726,14 @@ get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}', function(
 			userSecondName : account.secondName,
 
 			chemicalElement : JSON.parse(fs.readFileSync("chemicalElements.json", "utf8"))[request.url.substring(path.length).split(new RegExp("[/\?]"))[6]],
-			chemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
+			localizedChemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
+			chemicalElementsNames : function()
+			{
+				var vs={}
+				for(var v=0;v<fs.readdirSync("chemicalElementsNames").length;v++)
+					vs[fs.readdirSync("chemicalElementsNames")[v].substring(0,5)]=getMsgs(fs.readdirSync("chemicalElementsNames")[v].substring(0,5), "chemicalElementsNames")
+				return vs
+			}(),
 			chemAPI : chemAPI
 		},
 
@@ -741,7 +754,14 @@ get('/workspace/utils/subjects/chemistry/periodicTable', function(request, respo
 			userSecondName : account.secondName,
 
 			chemicalElements : JSON.parse(fs.readFileSync("chemicalElements.json", "utf8")),
-			chemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
+			localizedChemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
+			chemicalElementsNames : function()
+			{
+				var vs={}
+				for(var v=0;v<fs.readdirSync("chemicalElementsNames").length;v++)
+					vs[fs.readdirSync("chemicalElementsNames")[v].substring(0,5)]=getMsgs(fs.readdirSync("chemicalElementsNames")[v].substring(0,5), "chemicalElementsNames")
+				return vs
+			}(),
 			chemAPI : chemAPI
 		},
 
@@ -1710,14 +1730,6 @@ post('/startTesting', function(request, response, perms, account)
 		testId : request.body.testId,
 		testSettingsId : request.body.testSettingsId,
 		testingSettingsId : request.body.testingSettingsId
-	/*
-	 * ,
-	 * 
-	 * testingId : "(" + hashCode(account.login) + ")-(" +
-	 * hashCode(request.body.testingLogin) + ")-(" + hashCode(new Date()) +
-	 * ")-(" + request.body.testId + ")-(" + Math.floor("" + Math.random() *
-	 * 1000000) + ")"
-	 */
 	})
 	collection("testings").insertOne(testing)
 	console.log(request.body)
@@ -1741,6 +1753,30 @@ get('/testCreation', function(request, response, perms, account)
 		$msgs$ : getMsgs("ru_ru")
 	})
 }, [])
+
+function versionToDomens(version)
+{
+	var fs = version.replace(/[^0-9.]/g, "").split(".")
+	var els = [ fs[0], fs[1], fs[2] ]
+	if (version.indexOf("a") === version.length - 1)
+		els.push("a")
+	if (version.indexOf("b") === version.length - 1)
+		els.push("b")
+	return els
+}
+
+function getLastestTest(family, func)
+{
+	collection("tests").find(
+	{
+		family : family
+	}).toArray(function(err, tests)
+	{
+		var vs = {}
+		// for (var v = 0; v < tests.length; v++)
+		// if (vs[versionToDomens(tests[v].version)])
+	})
+}
 
 get('/test', function(request, response, perms, account)
 {

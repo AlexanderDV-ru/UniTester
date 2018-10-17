@@ -1,6 +1,7 @@
 {
   "name": "UniTester",
-  "version": "0.3.7a",
+  "version": "0.3.8a",
+  "authors": "AlexanderDV",
   "private": true,
   "scripts": {
     "start": "node app"

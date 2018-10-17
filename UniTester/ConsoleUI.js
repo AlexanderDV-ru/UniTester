@@ -17,6 +17,24 @@ process.stdin.on("data", function(data)
 	var intext = data.toString().trim();
 	switch (intext.toLowerCase().split(" ")[0])
 	{
+		case "splice":
+			var msgs1=appjs.getMsgs("ru_ru", "chemicalElementsNames")
+			var msgs2=appjs.getMsgs("en_uk", "chemicalElementsNames")
+			var keys=[]
+			var values=[]
+			for(var v in msgs1)
+				keys.push(v)
+			for(var v in msgs2)
+				values.push(msgs2[v])
+			for(var v=0;v<keys.length;v++)
+				console.log("'"+keys[v]+"': '"+values[v]+"'")
+			break
+		case "createdescnewels":
+			var model=',\n\t"%0":	{"symbol": "%0", 	"id": %1,	/*"name": "iii", */	"mass": "?", 	 "configuration": "?", "group": "?", "subgroup": "?", "period": "?", "type": "?", "status": "theoretically"}'
+			var names=appjs.fs.readFileSync("teoreticElements.txt", "utf8").split("\n")[1].split("\t")
+			for(var v=0;v<names.length;v++)
+				console.log(model.replace(/%0/g,names[v]).replace(/%1/g,v+127))
+			break
 		case "exit":
 			callback("Exit...");
 			appjs.exit(0);
