@@ -35,6 +35,16 @@ process.stdin.on("data", function(data)
 			for(var v=0;v<names.length;v++)
 				console.log(model.replace(/%0/g,names[v]).replace(/%1/g,v+127))
 			break
+		case "genrusnames":
+			break
+		case "genengnames":
+			break
+		case "count":
+			var text=appjs.fs.readFileSync(intext.split(" ")[1], "utf8").split("\n")
+			for(var v=0;v<text.length;v++)
+				if(text[v].replace(new RegExp("["+intext.split(" ")[2]+"]","g"),"").length!==text[v].replace(new RegExp("["+intext.split(" ")[3]+"]","g"),"").length)
+					console.log(v+1)
+			break
 		case "exit":
 			callback("Exit...");
 			appjs.exit(0);

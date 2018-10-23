@@ -46,7 +46,8 @@ html
 					{
 						if (this.readyState == 4 && this.status == 200)
 						{
-							func(this.responseText)
+							if(func)
+								func(this.responseText)
 							delete this
 						}
 					}

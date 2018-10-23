@@ -2,7 +2,7 @@ extends /layout
 
 block jsEnabledContent
 	header(style="background-color: #5AA0F0; width: 100%; padding: 0; vertical-align: middle; color: white;font-size: 20px;")
-		div(style="height: 20px")
+		div(style="height: 5px")
 		div#title(style="display: inline-block; width: 33%; vertical-align: middle;" align="left")
 			a.nontexthref(href="/") #{$msgs$.sitename}
 		div#reload(style="display: inline-block; width: 33%; vertical-align: middle;" align="center")
@@ -13,8 +13,8 @@ block jsEnabledContent
 					span(style="font-size: 16px;") #{data.userSurname} #{data.userName} #{data.userSecondName}
 					br
 					span(style="font-size: 14px;") #{data.userLogin}
-		div(style="height: 20px")
-	div#accountinfo(tabindex="0" style="display: none; position: absolute; top: 64px; right: 0px; padding: 5px; background-color: #5AA0F0;")
+		div(style="height: 5px")
+	div#accountinfo(tabindex="0" zindex=100 style="display: none; position: absolute; top: 64px; right: 0px; padding: 5px; background-color: #5AA0F0;")
 		a.greenButton(href="/signout") #{$msgs$.signout}
 	script(type="text/javascript").
 		var focused

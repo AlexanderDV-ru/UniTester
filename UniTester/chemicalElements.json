@@ -122,7 +122,7 @@
 	"Fl":	{"symbol": "Fl", 	"id": 114,	"_name": "Flerovium",	  "mass": 281, "configuration": "?", "group": 8, "subgroup": "B", "period": 7, "type": "Metal"},
 	"Mc":	{"symbol": "Mc", 	"id": 115,	"_name": "Moscovium",	  "mass": 281, "configuration": "?", "group": 8, "subgroup": "B", "period": 7, "type": "Metal"},
 	"Lv":	{"symbol": "Lv", 	"id": 116,	"_name": "Livermorium",	  "mass": 281, "configuration": "?", "group": 8, "subgroup": "B", "period": 7, "type": "Metal"},
-	"Ts":	{"symbol": "Ts", 	"id": 117,	"_name": "Tennessine",	  "mass": 281, "configuration": "?", "group": 8, "subgroup": "B", "period": 7, "type": "Metal"},
+	"Ts":	{"symbol": "Ts", 	"id": 117,	"_name": "Tennessine",	  "mass": 281, "configuration": "?", "group": 8, "subgroup": "B", "period": 7, "type": "Nonmetal"},
 	"Og":	{"symbol": "Og", 	"id": 118,	"_name": "Oganneson",	  "mass": 281, "configuration": "?", "group": 8, "subgroup": "B", "period": 7, "type": "Nonmetal"},
 	
 	"Uue":	{"symbol": "Uue", 	"id": 119,	"_name": "Ununennium",	  "mass": 281, "configuration": "?", "group": 8, "subgroup": "B", "period": 8, "type": "Metal", "status": "questionably"},

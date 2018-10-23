@@ -7,6 +7,20 @@ block inHead0
 	link(rel='stylesheet', href='/stylesheets/style2.css')
 	
 block content
+	- for(var v in requestQuery)
+		- data.periodicTableSettings[v]=requestQuery[v]
+	- if(requestQuery.lishThis)
+		- data.periodicTableSettings=requestQuery
+	- function toRomanNumber(number)
+		- var romanDigitsSymbols=" I II III IV V VI VII VIII IX".split(" ")
+		- var romanDigitsLook="-I VX LC DM".split(" ")
+		- number=number+""
+		- var result=""
+		- for(var v=0;v<number.length;v++)
+			- result+=romanDigitsSymbols[number[v]].replace("I","a").replace("V","b").replace("X","c").replace("a",romanDigitsLook[number.length-1-v][1]).replace("b",romanDigitsLook[number.length-v][0]).replace("c",romanDigitsLook[number.length-v][1])
+		- return result
+	- var maxRowSpan=typeof(data.periodicTableSettings.maxRowSpan)==="number"?(data.periodicTableSettings.maxRowSpan<1?Infinity:data.periodicTableSettings.maxRowSpan):(data.periodicTableSettings.inDifferentTables?17:18)
+	- if(!data.periodicTableSettings.beforeBasementSpaceHeight)data.periodicTableSettings.beforeBasementSpaceHeight=10
 	- var specialShowables=["symbol","radioactive","id","mass","name","localizedName"], unspecialShowables=[], showables=[]
 	- for(var v in data.chemicalElements["H"])
 		- var exists=false
@@ -20,46 +34,41 @@ block content
 	- for(var v=0;v<unspecialShowables.length;v++)
 		- showables.push(unspecialShowables[v])
 		
-	- var typeIndicators={metal:"lightgray",nonmetal:"rgb(255,100,100)",lantanoid:"lightblue",actinoid:"lightpink",superactinoid:"rgb(240,190,125)",superactinoid2:"rgb(0,190,125)",inert:"rgb(255,150,255)"}
+	- var propertiesOfHidingElements=["theoretically","questionably"]
 		
+	- var typeIndicators={metal:"lightgray",nonmetal:"rgb(255,100,100)",lantanoid:"lightblue",actinoid:"lightpink",superactinoid:"rgb(240,190,125)",superactinoid2:"rgb(0,190,125)",inert:"rgb(255,150,255)",shelochnie:"rgb(0,128,128)",shelochnozemelnie:"rgb(200,200,150)",polumetal:"rgb(128,128,64)",galogen:"rgb(255,240,120)"}
+	style.
+		.small
+		{
+			font-size: 10px;
+			font-family: Arial, "Arial Unicode MS", sans-serif;
+			overflow: hidden;
+		}
 	- function createChemicalElementCell(element)
-		td.element(style="position: relative;width: 100%;height: 100%;")
-			div.element-content
+		- if(!element)
+			td.periodicTableCell(style="position: relative;width: 100%;height: 100%;")
+				div.periodicTableCell-content(style="width: 100%;height: 100%;")
+			- return
+		td.element.periodicTableCell(class=element.status?element.status+"-elementWithProp":undefined style="position: relative;width: 100%;height: 100%;")
+			div.element-content.periodicTableCell-content(style="width: 100%;height: 100%;")
 				- if(!element)
 					- return
+				div.element-shadow(style="width: 100%;height: 100%;z-index: -1;position: absolute;left: 2px; bottom: 2px; background-color: gray")
 				- for(var v in typeIndicators)
-					div(class=v+"-element" style="width: 100%;height: 100%;z-index: -1;position: absolute;")
-						- if(data.chemAPI["is"+v[0].toUpperCase()+v.substring(1)](element))
-							div(class=v+"-background" style="width: 100%;height: 100%;background-color: "+typeIndicators[v])
+					- if(data.chemAPI["is"+v[0].toUpperCase()+v.substring(1)](element))
+						div(class=v+"-element "+v+"-background" style="width: 100%;height: 100%;z-index: -1;position: absolute;background-color: "+typeIndicators[v])
 				table.tableInTd
 					tr(style="width: 100%;")
-						td
-							table.tableInTd
-								tr(style="width: 100%;")
-									td.symbol-element(align="left" style="width: 33%;")
-										a(style="font-size: 12px;font-weight: bold;" href="/workspace/utils/subjects/chemistry/elementInfo/"+element.symbol) #{element.symbol}
-									td.radioactive-element(align="center" style="width: 33%;")
-										span(style="font-size: 14px;font-weight: bold; color: yellow;") #{data.chemAPI.isRadioactive(element)?"✱":" "}
-									td.id-element(align="right" style="width: 33%;")
-										span(style="font-size: 12px;font-weight: bold;") #{element.id}
+						td.symbol-element(align="left" style="width: 33%;")
+							a(style="font-size: 12px;font-weight: bold;" href="/workspace/utils/subjects/chemistry/elementInfo/"+element.symbol) #{element.symbol}
+						td.radioactive-element(align="center" style="width: 33%;font-size: 14px;font-weight: bold; color: yellow;") #{data.chemAPI.isRadioactive(element)?"✱":" "}
+						td.small.id-element(align="right" style="width: 33%;font-weight: bold;") #{element.id}
 					tr(style="width: 100%;")
-						td
-							table.tableInTd
-								tr(style="width: 100%;")
-									td.mass-element(align="right" style="width: 33%;")
-										span(style="font-size: 11px;") #{element.mass}
+						td.small.mass-element(colspan=3 align="right" style="width: 33%;") #{element.mass%1==0?"["+element.mass+"]":element.mass}
 					tr(style="width: 100%;")
-						td
-							table.tableInTd
-								tr(style="width: 100%;")
-									td.name-element(align="left" style="width: 33%;")
-										span(style="font-size: 11px;") #{data.chemicalElementsNames["la_la"]?data.chemicalElementsNames["la_la"][element.symbol]:"Error"}
+						td.small.name-element(colspan=3 aalign="left") #{data.chemicalElementsNames["la_la"]?data.chemicalElementsNames["la_la"][element.symbol]:"Error"}
 					tr(style="width: 100%;")
-						td
-							table.tableInTd
-								tr(style="width: 100%;")
-									td.localizedName-element(align="left" style="width: 33%;")
-										span(style="font-size: 11px;") #{data.localizedChemicalElementsNames[element.symbol]}
+						td.small.localizedName-element(colspan=3 align="left") #{data.localizedChemicalElementsNames[element.symbol]}
 					- for(var v in element)
 						- var exists=false
 						- for(var v1=0;v1<specialShowables.length;v1++)
@@ -67,15 +76,16 @@ block content
 								- exists=true
 						- if(!exists)
 							tr(style="width: 100%;")
-								td
-									table.tableInTd
-										tr
-											td(class=v+"-element" align="left" style="width: 33%;display: none;opacity: 1;")
-												span(style="font-size: 11px;") #{element[v]}
+								td.small(colspan=3 aclass=v+"-element" align="left" style="display: none;opacity: 1;") #{element[v]}
 	- var elementsTable=[], advTable={}
 	- for(var v in data.chemicalElements)
-		- var name=data.chemAPI.isLantanoid(data.chemicalElements[v])?"Lantanoid":data.chemAPI.isActinoid(data.chemicalElements[v])?"Actinoid":data.chemAPI.isSuperactinoid(data.chemicalElements[v])?"Superactinoid":data.chemAPI.isSuperactinoid2(data.chemicalElements[v])?"Superactinoid2":""
-		- if(name!=="")
+		- var name=data.chemAPI.getTypeGroup(data.chemicalElements[v])
+		- if(name==="")
+			- if(!elementsTable[data.chemicalElements[v].period-1])
+				- elementsTable[data.chemicalElements[v].period-1]=[]
+			- var pos=data.chemAPI.isInert(data.chemicalElements[v])?17:(data.chemicalElements[v].period<4&&elementsTable[data.chemicalElements[v].period-1].length==2?10:0)+elementsTable[data.chemicalElements[v].period-1].length
+			- elementsTable[data.chemicalElements[v].period-1][pos]=data.chemicalElements[v]
+		- else
 			- if(!advTable[name])
 				- advTable[name]=[]
 			- advTable[name].push(data.chemicalElements[v])
@@ -84,42 +94,95 @@ block content
 				- elementsTable[data.chemicalElements[v].period-1]=[]
 			- if(elementsTable[data.chemicalElements[v].period-1][elementsTable[data.chemicalElements[v].period-1].length-1]!==null)
 				- elementsTable[data.chemicalElements[v].period-1].push(null)
-		- else
-			- if(!elementsTable[data.chemicalElements[v].period-1])
-				- elementsTable[data.chemicalElements[v].period-1]=[]
-			- var pos=data.chemAPI.isInert(data.chemicalElements[v])?17:elementsTable[data.chemicalElements[v].period-1].length
-			- elementsTable[data.chemicalElements[v].period-1][pos]=data.chemicalElements[v]
-	table(style="max-width: 0px;")
-		thead
-			tr
-				td
-				- for(var v1=0;v1<18;v1++)
-					th= v1+1
+	table#periodicTable(style="max-width: 0px;border-spacing: 3px;")
+		- if(!data.periodicTableSettings.differentRowsLength)
+			thead
+				tr
+					td
+					- for(var v=0;v<18;v++)
+						- if(data.periodicTableSettings.wideTable&&v==2)
+							- for(var v1=0;v1<33;v1++)
+								th
+						th #{data.periodicTableSettings.romanGroups?toRomanNumber(v+1):v+1}
 		tbody
 			- for(var v=0;v<elementsTable.length;v++)
-				tr
-					th= v+1
-					- if(elementsTable[v])
-						- for(var v1=0;v1<elementsTable[v].length;v1++)
+				- function createPeriod()
+					- for(var v1=0;v1<elementsTable[v].length;v1++)
+						- if(data.periodicTableSettings.wideTable?v1===2:false)
+							- for(var v2=0;v2<33;v2++)
+								- createChemicalElementCell(advTable["Lantanoid Actinoid Superactinoid Superactinoid2".split(" ")[v-5]]?advTable["Lantanoid Actinoid Superactinoid Superactinoid2".split(" ")[v-5]][v2]:undefined)
+						- else
 							- createChemicalElementCell(elementsTable[v][v1])
-	table(style="max-width: 0px;")
-		tbody
-			- for(var v in advTable)
+				tr.periodicTableRow.mainRow
+					th #{data.periodicTableSettings.romanPeriods?toRomanNumber(v+1):v+1}
+					- if(elementsTable[v])
+						- if(!data.periodicTableSettings.differentRowsLength)
+							- createPeriod()
+						- else 
+							td
+								table(style="max-width: 0px;")
+									tr.periodicTableRow.mainRow
+										- createPeriod()
+			- if(data.periodicTableSettings.inDifferentTables)
+				table(style="max-width: 0px;")
+					tbody
+			- else if(Number.parseFloat(data.periodicTableSettings.beforeBasementSpaceHeight)>0)
+				- if(data.periodicTableSettings.differentBodies)
+					body
 				tr
-					th #{v}
 					td
-						table(style="max-width: 0px;")
-							- var maxRowWidth=17
-							- for(var v2=0;v2<advTable[v].length/maxRowWidth;v2++)
-								tr
-									- for(var v1=v2*maxRowWidth;v1<(v2+1)*maxRowWidth;v1++)
-										- createChemicalElementCell(advTable[v][v1])
+						div(style="height: "+data.periodicTableSettings.beforeBasementSpaceHeight+"px;")
+				- if(data.periodicTableSettings.differentBodies)
+					body
+			- if(!data.periodicTableSettings.wideTable)
+				- for(var v in advTable)
+					tr.periodicTableRow.basementRow
+						- if(data.periodicTableSettings.differentBasementRowsLength)
+							th #{v}
+							td
+								table(style="max-width: 0px;")
+									tr
+						- else 
+							th(rowspan=Math.ceil(advTable[v].length/maxRowSpan)) #{v}
+						- for(var v2=0;v2<advTable[v].length/maxRowSpan;v2++)
+							- function createRow()
+								- for(var v1=v2*maxRowSpan;v1<(v2+1)*maxRowSpan;v1++)
+									- createChemicalElementCell(advTable[v][v1])
+							- if(v2!==0)
+								tr.periodicTableRow.basementRow
+									- createRow()
+							- else createRow()
 	script.
-		function changePropOf(name,prop,value, units)
+		function changeRowsDisplay()
+		{
+			var periodicTableRows=document.getElementsByClassName("periodicTableRow")
+			for(var v=0;v<periodicTableRows.length;v++)
+			{
+				var exists=false
+				var elements=document.getElementsByClassName("element")
+				var rowElements=[]
+				for(var v1=0;v1<elements.length;v1++)
+					for(var next=elements[v1];next;next=next.parentNode)
+						if(next===periodicTableRows[v])
+							rowElements.push(elements[v1])
+				for(var v1=0;v1<rowElements.length;v1++)
+					if(getComputedStyle(rowElements[v1]).display!='none')
+						exists=true
+				periodicTableRows[v].style.display=exists||#{data.periodicTableSettings.showAllRows?true:false}?'':'none'
+			}
+		}
+	
+		function updateAll()
+		{
+			changeRowsDisplay()
+		}
+		
+		function changePropOf(name,prop,value, units,defltWithUnits)
 		{
 			var vs=document.getElementsByClassName(name)
 			for(var v=0;v<vs.length;v++)
-				vs[v].style[prop]=value!==""?value+units:""
+				vs[v].style[prop]=value!==""?value+units:(defltWithUnits!==undefined?defltWithUnits:"")
+			updateAll()
 		}
 		function hideShow(name, hideShower)
 		{
@@ -167,7 +230,53 @@ block content
 						td(align="center")
 							label #{propsControls[v]}
 						td(align="center")
-							input(type="number" style="width: 80px;" oninput="changePropOf('element-content','"+propsControls[v]+"',this.value,'px')")
+							input(id=propsControls[v]+"-input" type="number" style="width: 80px;" oninput="changePropOf('element-content','"+propsControls[v]+"',this.value,'px')")
+		label(style="display: inline;") cardsDisignControl
+		button.greenButton(style="display: inline;" onclick="hideShow('cardsDisignControl', this)") v
+		table#cardsDisignControl(border="1" style="display: none")
+			thead
+				tr
+					th Property
+					th Value
+			tbody
+				tr
+					td(align="center")
+						label Shadow-exists
+					td(align="center")
+						input#shadowExists-input(type="checkbox" style="width: 80px;" oninput="changePropOf('element-shadow','display',this.checked?'':'none','')")
+				tr
+					td(align="center")
+						label Shadow-Color
+					td(align="center")
+						input#shadowColor-input(type="text" style="width: 80px;" oninput="changePropOf('element-shadow','background-color',this.value,'','gray')")
+				tr
+					td(align="center")
+						label Shadow-X
+					td(align="center")
+						input#shadowX-input(type="number" style="width: 80px;" oninput="changePropOf('element-shadow','left',this.value,'px')")
+				tr
+					td(align="center")
+						label Shadow-Y
+					td(align="center")
+						input#shadowY-input(type="number" style="width: 80px;" oninput="changePropOf('element-shadow','bottom',this.value,'px')")
+		label(style="display: inline;") cardsOffsetsControl
+		button.greenButton(style="display: inline;" onclick="hideShow('cardsOffsetsControl', this)") v
+		table#cardsOffsetsControl(border="1" style="display: none")
+			thead
+				tr
+					th Property
+					th Value
+			tbody
+				tr
+					td(align="center")
+						label X-Offset
+					td(align="center")
+						input#xOffset-input(type="number" style="width: 80px;" oninput="document.getElementById('periodicTable').style['border-spacing']=(document.getElementById('xOffset-input').value||'2')+'px '+(document.getElementById('yOffset-input').value||'2')+'px';updateAll()")
+				tr
+					td(align="center")
+						label Y-Offset
+					td(align="center")
+						input#yOffset-input(type="number" style="width: 80px;" oninput="document.getElementById('periodicTable').style['border-spacing']=(document.getElementById('xOffset-input').value||'2')+'px '+(document.getElementById('yOffset-input').value||'2')+'px';updateAll()")
 		label(style="display: inline-block;") typeIndicatorsControl
 		button.greenButton(style="display: inline-block;" onclick="hideShow('typeIndicatorsControl', this)") v
 		table#typeIndicatorsControl(border="1" style="display: none")
@@ -183,8 +292,73 @@ block content
 						td(align="center")
 							label #{v}
 						td(align="center")
-							input(id=v+"-background-control" type="text" oninput="var vs=document.getElementsByClassName('"+v+"-"+"background"+"');for(var v=0;v<vs.length;v++)vs[v].style['background-color']=this.value!==''?this.value:'"+typeIndicators[v]+"'" checked=true)
+							input(id=v+"-background-input" type="text" oninput="var vs=document.getElementsByClassName('"+v+"-"+"background"+"');for(var v=0;v<vs.length;v++)vs[v].style['background-color']=this.value!==''?this.value:'"+typeIndicators[v]+"';updateAll()" checked=true)
 						td(align="center")
-							input(id=v+"-exists-control" type="checkbox" value=v oninput="var vs=document.getElementsByClassName('"+v+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none'" checked=true)
+							input(id=v+"-exists-input" type="checkbox" value=v oninput="var vs=document.getElementsByClassName('"+v+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none';updateAll()" checked=true)
 						td(align="center")
-							input(id=v+"-visible-control" type="checkbox" value=v oninput="var vs=document.getElementsByClassName('"+v+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0" checked=true)
+							input(id=v+"-visible-input" type="checkbox" value=v oninput="var vs=document.getElementsByClassName('"+v+"-"+"element"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0;updateAll()" checked=true)
+		label(style="display: inline-block;") elementsHidingControl
+		button.greenButton(style="display: inline-block;" onclick="hideShow('elementsHidingControl', this)") v
+		table#elementsHidingControl(border="1" style="display: none")
+			thead
+				tr
+					th Property
+					th Exists
+					th Visible
+			tbody
+				- for(var v=0;v<propertiesOfHidingElements.length;v++)
+					tr
+						td(align="center")
+							label #{propertiesOfHidingElements[v]}
+						td(align="center")
+							input(id=propertiesOfHidingElements[v]+"-exists-input" type="checkbox" value=propertiesOfHidingElements[v] oninput="var vs=document.getElementsByClassName('"+propertiesOfHidingElements[v]+"-"+"elementWithProp"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none';updateAll()" checked=true)
+						td(align="center")
+							input(id=propertiesOfHidingElements[v]+"-visible-input" type="checkbox" value=propertiesOfHidingElements[v] oninput="var vs=document.getElementsByClassName('"+propertiesOfHidingElements[v]+"-"+"elementWithProp"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0;updateAll()" checked=true)
+		script.
+			function saveInputs()
+			{
+				var savingSearchText=""
+				var inps=document.getElementsByTagName('input')
+				for(var v=0;v<inps.length;v++)
+					if(inps[v].id)
+						for(var v1=0;v1<inps[v].id.split(' ').length;v1++)
+							if(inps[v].id.split(' ')[v1].lastIndexOf('-input')===inps[v].id.split(' ')[v1].length-'-input'.length)
+							{
+								savingSearchText+=inps[v].id.split(' ')[v1]+"="+(inps[v].type=="checkbox"?inps[v].checked:inps[v].value)+"&"
+								break
+							}
+				sendRequest('post', '/saveChemSettings', savingSearchText)
+			}
+		button.greenButton(style="display: inline-block;" onclick="saveInputs()") Save
+		script!= 'var periodicTableSettings='+JSON.stringify(data.periodicTableSettings)
+		script.
+			document.getElementById('width-input').value="70"
+			document.getElementById('height-input').value="70"
+			document.getElementById('shadowX-input').value="3"
+			document.getElementById('shadowY-input').value="3"
+			document.getElementById('xOffset-input').value="6"
+			document.getElementById('yOffset-input').value="6"
+			
+			document.getElementById('width-input').oninput()
+			document.getElementById('height-input').oninput()
+			document.getElementById('shadowX-input').oninput()
+			document.getElementById('shadowY-input').oninput()
+			document.getElementById('xOffset-input').oninput()
+			document.getElementById('yOffset-input').oninput()
+			
+			
+			document.getElementById('theoretically-exists-input').checked=false
+			document.getElementById('theoretically-exists-input').oninput()
+			
+			for(var v in periodicTableSettings)
+				if(document.getElementById(v))
+					try
+					{
+						document.getElementById(v).value=periodicTableSettings[v]
+						document.getElementById(v).checked=periodicTableSettings[v]=='true'
+						document.getElementById(v).oninput()
+					}
+					catch(e)
+					{
+						console.error(e)
+					}

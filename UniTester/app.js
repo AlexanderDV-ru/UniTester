@@ -67,13 +67,12 @@ var hashCode = exports.hashCode = function(object)
 var getMsgs = exports.getMsgs = function(language, path)
 {
 	var messages = fs.readFileSync((path ? path : "public/messages") + "/" + language + ".lang", "utf8").split("\n")
-	//console.log(messages)
 	var msgs = {}
 	for (var v = 0; v < messages.length; v++)
 		if (messages[v].indexOf("//") !== -1 ? messages[v].indexOf("//") > messages[v].indexOf("'") : true)
 			if (messages[v].indexOf("'") !== -1 && messages[v].split(/':[\t ]+'/).length > 1)
 				if (messages[v].indexOf("'") < messages[v].split(/':[\t ]+'/)[0].length)
-					if (messages[v].indexOf(/':[\t ]+'/) + (messages[v].length-messages[v].replace(/':[\t ]+'/,'').length) < messages[v].lastIndexOf("'"))
+					if (messages[v].indexOf(/':[\t ]+'/) + (messages[v].length - messages[v].replace(/':[\t ]+'/, '').length) < messages[v].lastIndexOf("'"))
 					{
 						var key = messages[v].substring(messages[v].indexOf('\'') + 1).split(/':[\t ]+'/)[0]
 						var value = messages[v].substring(0, messages[v].lastIndexOf('\'')).split(/':[\t ]+'/)[1]
@@ -326,9 +325,6 @@ post([ '/signin', '/signin/info/[^/\?]+', '/signin/error/[^/\?]+', '/signin/ok/[
 		var bool = false;
 		for (var v = 0; v < accounts.length; v++)
 		{
-			console.log(accounts[v])
-			console.log(request.body)
-			console.log(hashCode(request.body.password))
 			if (accounts[v].login.toLowerCase() === request.body.login.toLowerCase() && accounts[v].passwordHash === hashCode(request.body.password))
 			{
 				addUser(new dbInterface.User(request.body.login, request.connection.remoteAddress, new Date().getTime(), accepts(request).languages()));
@@ -457,9 +453,7 @@ function parseChemicalFormula(formula)
 							type : IndexLessThanOneErrorInFormulaException,
 							message : "Index of " + inBrackets + " (" + index + ") less than one!"
 						});
-					var els = parseChemicalFormula(inBrackets);
-					console.log(inBrackets)
-					console.log(els)
+					var els = parseChemicalFormula(inBrackets)
 					for ( var el in els)
 						if (!elements[el])
 							elements[el] =
@@ -552,12 +546,6 @@ function sizeOf(object)
 
 function descript(formula, naming, chemicalElementsLanguage, language, signsAfterComma)
 {
-	console.log(formula)
-	console.log(naming)
-	console.log(chemicalElementsLanguage)
-	console.log(language)
-	console.log(signsAfterComma)
-
 	formula = replaceSmallToNormal(formula);
 	var chemicalElementsNames = getMsgs(chemicalElementsLanguage, "chemicalElementsNames");
 	var msgs = getMsgs(language);
@@ -630,7 +618,6 @@ function descript(formula, naming, chemicalElementsLanguage, language, signsAfte
 	description += "5. " + msgs["relativeMolecularMass"].replace("%1", molecularMassStr) + "\n"
 	description += "6. " + msgs["elementsMassRatio"].replace("%1", propStr) + "\n"
 	description += "7. " + msgs["elementsMassFractions"].replace("%1", massDolesStr)
-	console.log(description)
 	return description
 }
 
@@ -685,11 +672,11 @@ chemAPI.isInert = function(chemElement)
 
 chemAPI.isMetal = function(chemElement)
 {
-	return chemElement.type.toLowerCase() === "metal"
+	return chemElement.type.toLowerCase() === "metal"&&!chemAPI.isPolumetal(chemElement)
 }
 chemAPI.isNonmetal = function(chemElement)
 {
-	return chemElement.type.toLowerCase() === "nonmetal"
+	return chemElement.type.toLowerCase() === "nonmetal"||chemAPI.isPolumetal(chemElement)
 }
 
 chemAPI.isLantanoid = function(chemElement)
@@ -714,6 +701,50 @@ chemAPI.isRadioactive = function(chemElement)
 	return chemElement.id >= 84 || chemElement.mass >= 209
 }
 
+chemAPI.isShelochnie = function(chemElement)
+{
+	return chemElement.symbol.replace(/(Li|Na|K|Rb|Cs|Fr|Uue)/,"")==""
+}
+
+chemAPI.isShelochnozemelnie = function(chemElement)
+{
+	return chemElement.symbol.replace(/(Be|Mg|Ca|Sr|Ba|Ra|Ubn)/,"")==""
+}
+
+chemAPI.isGalogen = function(chemElement)
+{
+	return chemElement.symbol.replace(/(F|Cl|Br|I|At|Ts)/,"")==""
+}
+
+chemAPI.isPolumetal = function(chemElement)
+{
+	return chemElement.symbol.replace(/(B|Si|Ge|As|Sb|Te|Po)/,"")==""
+}
+
+chemAPI.getTypeGroup = function(chemElement)
+{
+	return chemAPI.isLantanoid(chemElement) ? "Lantanoid" : chemAPI.isActinoid(chemElement) ? "Actinoid" : chemAPI.isSuperactinoid(chemElement) ? "Superactinoid" : chemAPI.isSuperactinoid2(chemElement) ? "Superactinoid2" : ""
+}
+
+post('/saveChemSettings', function(request, response, perms, account, user)
+{
+	collection('saveChemSettings').findOneAndUpdate(
+	{
+		login : new RegExp("^" + account.login + "$", "i")
+	},
+	{
+		$set :
+		{
+			login : account.login,
+			data : request.body
+		}
+	},
+	{
+		upsert : true
+	})
+	response.end()
+})
+
 get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}', function(request, response, perms, account, user)
 {
 	response.render("workspace/utils/subjects/chemistry/elementInfo.pug",
@@ -729,9 +760,9 @@ get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}', function(
 			localizedChemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
 			chemicalElementsNames : function()
 			{
-				var vs={}
-				for(var v=0;v<fs.readdirSync("chemicalElementsNames").length;v++)
-					vs[fs.readdirSync("chemicalElementsNames")[v].substring(0,5)]=getMsgs(fs.readdirSync("chemicalElementsNames")[v].substring(0,5), "chemicalElementsNames")
+				var vs = {}
+				for (var v = 0; v < fs.readdirSync("chemicalElementsNames").length; v++)
+					vs[fs.readdirSync("chemicalElementsNames")[v].substring(0, 5)] = getMsgs(fs.readdirSync("chemicalElementsNames")[v].substring(0, 5), "chemicalElementsNames")
 				return vs
 			}(),
 			chemAPI : chemAPI
@@ -744,29 +775,36 @@ get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}', function(
 
 get('/workspace/utils/subjects/chemistry/periodicTable', function(request, response, perms, account, user)
 {
-	response.render("workspace/utils/subjects/chemistry/periodicTable.pug",
+	collection('saveChemSettings').find(
 	{
-		data :
+		login : new RegExp("^" + account.login + "$", "i")
+	}).toArray(function(err, saveChemSettings)
+	{
+		response.render("workspace/utils/subjects/chemistry/periodicTable.pug",
 		{
-			userLogin : account.login,
-			userSurname : account.surname,
-			userName : account.name,
-			userSecondName : account.secondName,
-
-			chemicalElements : JSON.parse(fs.readFileSync("chemicalElements.json", "utf8")),
-			localizedChemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
-			chemicalElementsNames : function()
+			data :
 			{
-				var vs={}
-				for(var v=0;v<fs.readdirSync("chemicalElementsNames").length;v++)
-					vs[fs.readdirSync("chemicalElementsNames")[v].substring(0,5)]=getMsgs(fs.readdirSync("chemicalElementsNames")[v].substring(0,5), "chemicalElementsNames")
-				return vs
-			}(),
-			chemAPI : chemAPI
-		},
+				userLogin : account.login,
+				userSurname : account.surname,
+				userName : account.name,
+				userSecondName : account.secondName,
 
-		requestQuery : request.query || {},
-		$msgs$ : getMsgs("ru_ru")
+				chemicalElements : JSON.parse(fs.readFileSync("chemicalElements.json", "utf8")),
+				localizedChemicalElementsNames : getMsgs("ru_ru", "chemicalElementsNames"),
+				chemicalElementsNames : function()
+				{
+					var vs = {}
+					for (var v = 0; v < fs.readdirSync("chemicalElementsNames").length; v++)
+						vs[fs.readdirSync("chemicalElementsNames")[v].substring(0, 5)] = getMsgs(fs.readdirSync("chemicalElementsNames")[v].substring(0, 5), "chemicalElementsNames")
+					return vs
+				}(),
+				chemAPI : chemAPI,
+				periodicTableSettings : !saveChemSettings[0] ? {} : saveChemSettings[0].data
+			},
+
+			requestQuery : request.query || {},
+			$msgs$ : getMsgs("ru_ru")
+		})
 	})
 }, [ "workspace.utils.subjects.chemistry.periodicTable" ])
 
@@ -962,6 +1000,7 @@ post('/accounts/management/changepassword/[a-zA-Z0-9]+', function(request, respo
 			{
 				$set :
 				{
+					login : urlLogin,
 					passwordHash : hashCode(request.body.password)
 				}
 			});
@@ -1084,8 +1123,6 @@ get('/workspace', function(request, response, perms, account)
 {
 	var groupsPerms = [];
 	for (var v = 0; v < perms.length; v++)
-	{
-		console.log(perms)
 		if (perms[v].indexOf("workspace.") === 0 && perms[v].split(".").length === 2)
 		{
 			var b = false
@@ -1095,8 +1132,6 @@ get('/workspace', function(request, response, perms, account)
 			if (!b)
 				groupsPerms.push(perms[v].split(".")[1])
 		}
-	}
-	console.log(groupsPerms)
 	switch (groupsPerms.length > 1 ? null : groupsPerms[0])
 	{
 		case "admin":
@@ -1248,7 +1283,6 @@ get('/getunitinfo', function(request, response, perms, account, user)
 })
 get('/getdata', function(request, response, perms, account, user)
 {
-	console.log(request.query);
 	if (request.query.existOrdersSearch)
 		collection("orders").find(
 		{
@@ -1266,9 +1300,7 @@ get('/getdata', function(request, response, perms, account, user)
 		{
 			var data = "";
 			for (var v = 0; v < hints.length; v++)
-				data += hints[v].hint + "&";
-			console.log(data);
-			response.end(data);
+				data += hints[v].hint + "&"
 		});
 	else if (request.query.orderFormSearch)
 		collection("orderForms").find(
@@ -1546,12 +1578,13 @@ post('/postdata', function(request, response, perms, account)
 			{
 				$set :
 				{
+					login : account.login,
 					data : orderData
 				}
 			},
 			{
 				upsert : true
-			});
+			})
 		})
 	}
 	else return response.status(400);
@@ -1732,8 +1765,6 @@ post('/startTesting', function(request, response, perms, account)
 		testingSettingsId : request.body.testingSettingsId
 	})
 	collection("testings").insertOne(testing)
-	console.log(request.body)
-	console.log(testing)
 	response.end('ok')
 }, [])
 
@@ -1874,7 +1905,6 @@ get('/tests', function(request, response, perms, account)
 post('/testCreation', function(request, response, perms, account)
 {
 	var testDB = request.body
-	console.log(request.body)
 	try
 	{
 		testDB.object = JSON.parse(testDB.code)
@@ -1901,7 +1931,6 @@ post('/testing', function(request, response, perms, account)
 		userAnswer : request.body.userAnswer,
 		userLogin : account.login
 	})
-	console.log(request.body)
 	response.end('ok')
 }, [])
 
@@ -2046,9 +2075,6 @@ var getAccountPerms = exports.getAccountPerms = function(account, func)
 					{
 						name : account.groupsNames[v]
 					})
-
-				console.log(account)
-				console.log(members)
 				for (var v1 = 0; v1 < members.length; v1++)
 					getMemberPerms(members[v1], function(perms)
 					{
