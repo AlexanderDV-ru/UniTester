@@ -23,7 +23,7 @@ block content
 				td(align="right")
 					label #{$msgs$.chemicalFormula}
 				td(align="left")
-					input(type="text" name="chemicalFormula" value=requestQuery.chemicalFormula oninput="this.value=this.value.replace(/0/g, '₀').replace(/1/g, '₁').replace(/2/g, '₂').replace(/3/g, '₃').replace(/4/g, '₄').replace(/5/g, '₅').replace(/6/g, '₆').replace(/7/g, '₇').replace(/8/g, '₈').replace(/9/g, '₉').replace(/[^₀₁₂₃₄₅₆₇₈₉A-Za-z()]+/g,'')")
+					include /chemicalFormulaInput
 			tr
 				td(align="right")
 					label #{$msgs$.naming}

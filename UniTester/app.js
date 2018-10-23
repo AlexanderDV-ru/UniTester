@@ -586,8 +586,8 @@ function descript(formula, naming, chemicalElementsLanguage, language, signsAfte
 	var first = true;
 	for ( var el in elements)
 	{
-		elementsStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.name] + "(" + elements[el].element.symbol + ")";
-		amountStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.name] + "(" + elements[el].element.symbol + ")" + " - " + elements[el].amount + " " + msgs["atoms"];
+		elementsStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.symbol] + "(" + elements[el].element.symbol + ")";
+		amountStr += (first ? "" : ", ") + chemicalElementsNames[elements[el].element.symbol] + "(" + elements[el].element.symbol + ")" + " - " + elements[el].amount + " " + msgs["atoms"];
 		molecularMassStr += (first ? "" : " + ") + doubleToString(elements[el].element.mass * elements[el].amount, signsAfterComma) + "(" + elements[el].element.symbol + ", " + doubleToString(elements[el].element.mass, signsAfterComma) + " * " + elements[el].amount + ")";
 		var first2 = true;
 		for ( var el2 in elements)

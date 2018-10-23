@@ -44,12 +44,48 @@ block content
 			font-family: Arial, "Arial Unicode MS", sans-serif;
 			overflow: hidden;
 		}
+	div(style="position:relative;max-width:0px;z-index:5;")
+		div(style="position:absolute;")
+			table(style="max-width: 0px;border-spacing: 3px;")
+				tr
+					td(style="position:relative;right: 160px;top: 20px;")
+						table
+							tr
+								form(action="/workspace/utils/subjects/chemistry/formulaDescription" method="get")
+									td
+										table
+											tr
+												td
+													include /chemicalFormulaInput
+												td
+													input(type="submit" value=$msgs$.getDescription)
+							tr
+								td
+									table
+										tr
+											td#selectedElementInfo(style="position:relative;width:100%;height:100%;")
 	- function createChemicalElementCell(element)
 		- if(!element)
 			td.periodicTableCell(style="position: relative;width: 100%;height: 100%;")
 				div.periodicTableCell-content(style="width: 100%;height: 100%;")
 			- return
-		td.element.periodicTableCell(class=element.status?element.status+"-elementWithProp":undefined style="position: relative;width: 100%;height: 100%;")
+		- var elementHref="/workspace/utils/subjects/chemistry/elementInfo/"+element.symbol
+		script.
+			function onmouseoverEvent(innerHTML)
+			{
+				document.getElementById('selectedElementInfo').innerHTML=innerHTML
+				document.getElementById('selectedElementInfo').children[0].style.cssText=document.getElementById('selectedElementInfo').style.cssText
+				function facg(el)
+				{
+					if(el.getAttribute('class'))
+						if(el.getAttribute('class').indexOf('-element')!=-1)
+							el.style.display=''
+					for(var v=0;v<el.children.length;v++)
+						facg(el.children[v])
+				}
+				facg(document.getElementById('selectedElementInfo'))
+			}
+		td.element.periodicTableCell(tabindex=element.id+1 class=element.status?element.status+"-elementWithProp":undefined style="position: relative;width: 100%;height: 100%;" ondblclick="window.location.href='"+elementHref+"'" onmouseover="onmouseoverEvent(this.innerHTML)" onkeypress="console.log(event);if(event.key.replace(/[0-9]/,'')=='')document.getElementsByClassName('chemicalFormulaInput')[0].value+=event.key!='0'?'"+element.symbol+"'+(event.key!='1'?event.key:''):''")
 			div.element-content.periodicTableCell-content(style="width: 100%;height: 100%;")
 				- if(!element)
 					- return
@@ -60,7 +96,7 @@ block content
 				table.tableInTd
 					tr(style="width: 100%;")
 						td.symbol-element(align="left" style="width: 33%;")
-							a(style="font-size: 12px;font-weight: bold;" href="/workspace/utils/subjects/chemistry/elementInfo/"+element.symbol) #{element.symbol}
+							a(style="font-size: 12px;font-weight: bold;" href=elementHref) #{element.symbol}
 						td.radioactive-element(align="center" style="width: 33%;font-size: 14px;font-weight: bold; color: yellow;") #{data.chemAPI.isRadioactive(element)?"✱":" "}
 						td.small.id-element(align="right" style="width: 33%;font-weight: bold;") #{element.id}
 					tr(style="width: 100%;")
@@ -76,7 +112,7 @@ block content
 								- exists=true
 						- if(!exists)
 							tr(style="width: 100%;")
-								td.small(colspan=3 aclass=v+"-element" align="left" style="display: none;opacity: 1;") #{element[v]}
+								td.small(colspan=3 class=v+"-element" align="left" style="display: none;opacity: 1;") #{element[v]}
 	- var elementsTable=[], advTable={}
 	- for(var v in data.chemicalElements)
 		- var name=data.chemAPI.getTypeGroup(data.chemicalElements[v])
@@ -314,6 +350,21 @@ block content
 							input(id=propertiesOfHidingElements[v]+"-exists-input" type="checkbox" value=propertiesOfHidingElements[v] oninput="var vs=document.getElementsByClassName('"+propertiesOfHidingElements[v]+"-"+"elementWithProp"+"');for(var v=0;v<vs.length;v++)vs[v].style.display=this.checked?'':'none';updateAll()" checked=true)
 						td(align="center")
 							input(id=propertiesOfHidingElements[v]+"-visible-input" type="checkbox" value=propertiesOfHidingElements[v] oninput="var vs=document.getElementsByClassName('"+propertiesOfHidingElements[v]+"-"+"elementWithProp"+"');for(var v=0;v<vs.length;v++)vs[v].style.opacity=this.checked?1:0;updateAll()" checked=true)
+		label(style="display: inline-block;") fontsControl
+		button.greenButton(style="display: inline-block;" onclick="hideShow('elementsHidingControl', this)") v
+		- var fontElements={small: "10px"}
+		table#fontsControl(border="1" style="display: none")
+			thead
+				tr
+					th Element
+					th Font
+			tbody
+				- for(var v=0;v<fontElements.length;v++)
+					tr
+						td(align="center")
+							label #{fontElements[v]}
+						td(align="center")
+							input(id=fontElements[v]+"-font-input" type="text" oninput="changePropOf('small','font',this.value,'')")
 		script.
 			function saveInputs()
 			{
