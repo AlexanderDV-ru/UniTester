@@ -275,7 +275,7 @@ function getUserLanguage(user, dir)
 				return d[v2].toLowerCase().substring(0, 5);
 }
 
-get([ '[^]+[.]css', '[^]+[.]ico', '[^]+[.]js' ], function(request, response)
+get([ '[^]+[.]css', '[^]+[.]ico', '[^]+[.]js', '/robots[.]txt' ], function(request, response)
 {
 	response.end(fs.readFileSync("public" + request.url, "utf8"))
 }, undefined, undefined, undefined, true)
@@ -655,6 +655,23 @@ get('/workspace/utils/subjects/chemistry/formulaDescription', function(request, 
 	})
 }, [ "workspace.utils.subjects.chemistry.formulaDescription" ])
 
+get('/info', function(request, response, perms, account, user)
+{
+	response.render("info.pug",
+	{
+		data : account ?
+		{
+			userLogin : account.login,
+			userSurname : account.surname,
+			userName : account.name,
+			userSecondName : account.secondName
+		} : {},
+
+		requestQuery : request.query || {},
+		$msgs$ : getMsgs("ru_ru")
+	})
+}, undefined, undefined, undefined, true)
+
 var chemAPI = {}
 chemAPI.isInert = function(chemElement)
 {
@@ -672,11 +689,11 @@ chemAPI.isInert = function(chemElement)
 
 chemAPI.isMetal = function(chemElement)
 {
-	return chemElement.type.toLowerCase() === "metal"&&!chemAPI.isPolumetal(chemElement)
+	return chemElement.type.toLowerCase() === "metal" && !chemAPI.isPolumetal(chemElement)
 }
 chemAPI.isNonmetal = function(chemElement)
 {
-	return chemElement.type.toLowerCase() === "nonmetal"||chemAPI.isPolumetal(chemElement)
+	return chemElement.type.toLowerCase() === "nonmetal" || chemAPI.isPolumetal(chemElement)
 }
 
 chemAPI.isLantanoid = function(chemElement)
@@ -703,22 +720,22 @@ chemAPI.isRadioactive = function(chemElement)
 
 chemAPI.isShelochnie = function(chemElement)
 {
-	return chemElement.symbol.replace(/(Li|Na|K|Rb|Cs|Fr|Uue)/,"")==""
+	return chemElement.symbol.replace(/(Li|Na|K|Rb|Cs|Fr|Uue)/, "") == ""
 }
 
 chemAPI.isShelochnozemelnie = function(chemElement)
 {
-	return chemElement.symbol.replace(/(Be|Mg|Ca|Sr|Ba|Ra|Ubn)/,"")==""
+	return chemElement.symbol.replace(/(Be|Mg|Ca|Sr|Ba|Ra|Ubn)/, "") == ""
 }
 
 chemAPI.isGalogen = function(chemElement)
 {
-	return chemElement.symbol.replace(/(F|Cl|Br|I|At|Ts)/,"")==""
+	return chemElement.symbol.replace(/(F|Cl|Br|I|At|Ts)/, "") == ""
 }
 
 chemAPI.isPolumetal = function(chemElement)
 {
-	return chemElement.symbol.replace(/(B|Si|Ge|As|Sb|Te|Po)/,"")==""
+	return chemElement.symbol.replace(/(B|Si|Ge|As|Sb|Te|Po)/, "") == ""
 }
 
 chemAPI.getTypeGroup = function(chemElement)
@@ -1785,27 +1802,65 @@ get('/testCreation', function(request, response, perms, account)
 	})
 }, [])
 
-function versionToDomens(version)
+function versionToDomens(version, digital)
 {
-	var fs = version.replace(/[^0-9.]/g, "").split(".")
-	var els = [ fs[0], fs[1], fs[2] ]
+	var els = version.replace(/[^0-9.]/g, "").split(".")
 	if (version.indexOf("a") === version.length - 1)
-		els.push("a")
-	if (version.indexOf("b") === version.length - 1)
-		els.push("b")
+		els.unshift(digital ? 0 : "a")
+	else if (version.indexOf("b") === version.length - 1)
+		els.unshift(digital ? 1 : "b")
+	else els.unshift(digital ? 2 : "r")
 	return els
 }
 
-function getLastestTest(family, func)
+function getTestsOfIdentifierTree(identifier, func)
 {
 	collection("tests").find(
 	{
-		family : family
+		identifier : identifier
 	}).toArray(function(err, tests)
 	{
+		var max = 0
+		for (var v = 0; v < tests.length; v++)
+			max = Math.max(max, versionToDomens(tests[v].version).length)
 		var vs = {}
-		// for (var v = 0; v < tests.length; v++)
-		// if (vs[versionToDomens(tests[v].version)])
+		for (var v = 0; v < tests.length; v++)
+			for (var v1 = 0, cvs = vs; v1 < max; v1++)
+			{
+				var doms = versionToDomens(tests[v].version, true)
+				var p = doms[doms.length - max + v1 || 0]
+				if (!cvs[p])
+					cvs[p] = {}
+				if (v1 == max - 1)
+					cvs[p] = tests[v]
+				cvs = cvs[p]
+			}
+		var vsArray = []
+		function toVersionsArray(arr, obj, lvl, maxLvl)
+		{
+			for ( var v in obj)
+				arr.push(
+				{
+					index : v,
+					object : lvl == maxLvl - 1 ? obj[v] : toVersionsArray([], obj[v], lvl + 1, maxLvl)
+				})
+			return arr.sort(function(a, b)
+			{
+				return a.index - b.index
+			})
+		}
+		func(toVersionsArray(vsArray, vs, 0, max), max)
+	})
+}
+
+function getLastTestOfIdentifier(identifier, func)
+{
+	getTestsOfIdentifierTree(identifier, function(tree, max)
+	{
+		var r = tree
+		for (var v = 0; v < max; v++)
+			r = r[r.length - 1].object
+		func(r)
 	})
 }
 
@@ -1836,9 +1891,9 @@ get('/test', function(request, response, perms, account)
 
 get('/testings', function(request, response, perms, account)
 {
-	collection("testings").find(request.query.id ?
+	collection("testings").find(request.query.testId ?
 	{
-		testId : request.query.id
+		testId : request.query.testId
 	} : {}).toArray(function(err, testings)
 	{
 		var testingsInfo = []
@@ -1874,7 +1929,54 @@ get('/tests', function(request, response, perms, account)
 	collection("tests").find().toArray(function(err, tests)
 	{
 		var testsInfo = []
-		for (var v = 0; v < tests.length; v++)
+		function render()
+		{
+			response.render("tests",
+			{
+				data :
+				{
+					userLogin : account.login,
+					userSurname : account.surname,
+					userName : account.name,
+					userSecondName : account.secondName,
+
+					testsInfo : testsInfo
+				},
+
+				requestQuery : request.query || {},
+				$msgs$ : getMsgs("ru_ru")
+			})
+		}
+		if (!request.query.allVersions)
+		{
+			var identifiers = {}
+			for (var v = 0; v < tests.length; v++)
+				identifiers[tests[v].identifier] = true
+			var identifiersArray = []
+			for ( var v in identifiers)
+				identifiersArray.push(v)
+			var count = 0
+			function next(v)
+			{
+				getLastTestOfIdentifier(identifiersArray[v], function(test)
+				{
+					testsInfo.push(
+					{
+						name : test.name,
+						authors : test.authors,
+						version : test.version,
+						id : test._id,
+						comitter : test.comitterLogin
+					})
+					count++
+					if (count == identifiersArray.length)
+						render()
+				})
+			}
+			for (var v = 0; v < identifiersArray.length; v++)
+				next(v)
+		}
+		else for (var v = 0; v < tests.length; v++)
 			testsInfo.push(
 			{
 				name : tests[v].name,
@@ -1883,22 +1985,6 @@ get('/tests', function(request, response, perms, account)
 				id : tests[v]._id,
 				comitter : tests[v].comitterLogin
 			})
-
-		response.render("tests",
-		{
-			data :
-			{
-				userLogin : account.login,
-				userSurname : account.surname,
-				userName : account.name,
-				userSecondName : account.secondName,
-
-				testsInfo : testsInfo
-			},
-
-			requestQuery : request.query || {},
-			$msgs$ : getMsgs("ru_ru")
-		})
 	})
 }, [])
 
@@ -1929,7 +2015,8 @@ post('/testing', function(request, response, perms, account)
 		questionNumber : request.body.questionNumber,
 		date : new Date(),
 		userAnswer : request.body.userAnswer,
-		userLogin : account.login
+		userLogin : account.login,
+		body : request.body
 	})
 	response.end('ok')
 }, [])

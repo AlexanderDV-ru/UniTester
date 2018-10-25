@@ -61,6 +61,22 @@ block content
 					button#next.greenButton(disabled=data.test.testQuestionNumber>=data.test.questionsCount-1 title=data.test.testQuestionNumber>=data.test.questionsCount-1?$msgs$.questionsAfterThisNotExist:undefined onclick="save();goToQuestion(Number.parseInt(requestQuery.questionNumber)+1)") #{$msgs$.next}
 		div.question(style="margin: 20px;") #{$msgs$.questionNumber} #{data.test.testQuestionNumber}
 			div!= data.test.testQuestion.question.html
+			- if(!data.test.testQuestion.answerVariantsInOriginalOrder)
+				- var vs = []
+				- var vars = {}
+				- for(var v=0;v<data.test.testQuestion.answerVariants.length;v++)
+					- vars[v]=data.test.testQuestion.answerVariants[v]
+				- for(var v=data.test.testQuestion.answerVariants.length-1;v>=0;v--)
+					- var rand=Math.round(Math.random()*v)
+					- vs.push(vars[rand])
+					- var vars2=[]
+					- for(var v1=0;v1<v+1;v1++)
+						- if(v1!=rand)
+							- vars2.push(vars[v1])
+					- vars={}
+					- for(var v1=0;v1<vars2.length;v1++)
+						- vars[v1]=vars2[v1]
+				- data.test.testQuestion.answerVariants=vs
 			- if(data.test.testQuestion.type==='chooseOne')
 				- for(var v=0;v<data.test.testQuestion.answerVariants.length;v++)
 					button.greenButton.answerVariant(title=$msgs$.answerVariantNumber+v onclick="var vs=document.getElementsByClassName('answerVariant');for(var v=0;v<vs.length;v++)vs[v].setAttribute('class',vs[v].getAttribute('class').replace('activeCSS',''));this.setAttribute('class',this.getAttribute('class')+' activeCSS');")!= data.test.testQuestion.answerVariants[v].html

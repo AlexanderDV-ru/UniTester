@@ -8,4 +8,5 @@ block inHead0
 
 block content
 	button(onclick="sendRequest('post','/startTesting','testId="+data.test._id+"')") #{$msgs$.startTesting}
-	button(onclick="window.location.replace('/testings?testId="+data.test._id+"')") #{$msgs$.getTestings}
+	button
+		a.nontexthref(href="/testings?testId="+data.test._id) #{$msgs$.getTestings}

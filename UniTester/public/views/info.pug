@@ -1,0 +1,13 @@
+extends /headered
+
+block title
+	title #{$msgs$.info} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	div#info.
+		#{$msgs$.info_definition}
+		#{$msgs$.info_tests}
+		#{$msgs$.info_opportunities}

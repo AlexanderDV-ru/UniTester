@@ -1,9 +1,9 @@
 /* INPUT TEXT */
 input[type="text"]:not(.browserStyle), input[type="password"]:not(.browserStyle), input[type="search"]:not(.browserStyle), input[type="number"]:not(.browserStyle) {
-	padding: 0 10px;
+	padding: 0 5px;
 	font-size: 16px;
 	outline: none;
-	height: 33px;
+	height: 28px;
 	color: #96999e;
 	border: 2px solid #e0e2e6;
 	background: white;
@@ -62,7 +62,7 @@ input[type="submit"]:not(.browserStyle), .greenButton:not(.browserStyle), input[
 	text-align: center;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
-	padding: 5px 16px;
+	padding: 3px 7px;
 	margin: 0px;
 	text-decoration: none;
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);

@@ -10,6 +10,10 @@ block content
 	table
 		tr
 			td
+				label #{$msgs$.testIdentifier}
+			td
+				input#testIdentifier
+			td
 				label #{$msgs$.testName}
 			td
 				input#testName
@@ -27,9 +31,78 @@ block content
 	script.
 		function saveTestClick()
 		{
-			sendRequest('post', '/testCreation', 'code='+encodeURIComponent(document.getElementById('codeArea').value)+"&name="+encodeURIComponent(document.getElementById('testName').value)+"&version="+encodeURIComponent(document.getElementById('testVersion').value)+"&authors="+encodeURIComponent(document.getElementById('testAuthors').value), function(text)
+			if(document.getElementById('testName').value=='')
+				alert($msgs$.fillNameFieldToSaveTest)
+			else if(document.getElementById('testIdentifier').value=='')
+				alert($msgs$.fillIdentifierFieldToSaveTest)
+			else if(document.getElementById('testVersion').value=='')
+				alert($msgs$.fillVersionFieldToSaveTest)
+			else if(document.getElementById('testAuthors').value=='')
+				alert($msgs$.fillAuthorsFieldToSaveTest)
+			else if(document.getElementById('codeArea').value=='')
+				alert($msgs$.fillCodeFieldToSaveTest)
+			else sendRequest('post', '/testCreation', 'code='+encodeURIComponent(document.getElementById('codeArea').value)+"&name="+encodeURIComponent(document.getElementById('testName').value)+"&identifier="+encodeURIComponent(document.getElementById('testIdentifier').value)+"&version="+encodeURIComponent(document.getElementById('testVersion').value)+"&authors="+encodeURIComponent(document.getElementById('testAuthors').value), function(text)
 			{
 				alert(text!=="ok"?text:$msgs$.testCreatedSuccessfully)
 			})
 		}
 	button(onclick="saveTestClick()") #{$msgs$.saveTest}
+	label Code generator
+	textarea#generatedCode(disabled=true)
+	div.questions
+	script.
+		function ifNanThanZero(n)
+		{
+			n=Number.parseFloat(n+"")
+			return Number.isNaN(n)?0:n
+		}
+		function updateCode()
+		{
+			var val='{\n\t"testQuestions" : [\n%0\n\t]\n}'
+			var qT=""
+			var els=document.getElementsByClassName('questionHtml')
+			for(var v=0;v<els.length;v++)
+			{
+				var qqT=(v!=0?',\n':'')+'\t\t{\n\t\t\t"type" : "'+document.getElementsByClassName('questionType')[v].value+'",\n\t\t\t"question" :\n\t\t\t{\n\t\t\t\t"html" : "'+els[v].value+'"\n\t\t\t},\n\t\t\t"answerVariants" : [\n%1\n\t\t\t]\n\t\t}'
+				var val2=""
+				var answerss=document.getElementsByClassName('answers')
+				for(var v1=0;v1<answerss.length;v1++)
+					if(answerss[v1].parentNode==els[v].parentNode)
+					{
+						var aT=""
+						var answersHtmls=document.getElementsByClassName('answerHtml')
+						var answersAwards=document.getElementsByClassName('answerAward')
+						var answersCount=0
+						for(var v2=0;v2<answersHtmls.length;v2++)
+							if(answersHtmls[v2].parentNode.parentNode==answerss[v1])
+							{
+								aT+=(answersCount!=0?',\n':'')+'\t\t\t\t{\n\t\t\t\t\t"html" : "'+answersHtmls[v2].value+'",\n\t\t\t\t\t"award" : '+ifNanThanZero(Number.parseFloat(answersAwards[v2].value))+'\n\t\t\t\t}'
+								answersCount++
+							}
+						val2+=aT
+					}
+				qT+=qqT.replace('%1',val2)
+			}
+			document.getElementById('generatedCode').value=val.replace("%0",qT)
+		}
+		function addAnswer(th)
+		{
+			var answer=document.createElement('div')
+			answer.style["padding-left"]="50px"
+			answer.innerHTML="<label>HTML: </label><input type='text' class='answerHtml' oninput='updateCode()'/><input type='number' class='answerAward' oninput='updateCode()'/>"
+			var answersEls=document.getElementsByClassName('answers')
+			for(var v=0;v<answersEls.length;v++)
+				if(answersEls[v].parentNode===th.parentNode)
+					answersEls[v].appendChild(answer)
+		}
+		function addQuestion(th)
+		{
+			var question=document.createElement('div')
+			question.style["padding-left"]="50px"
+			question.innerHTML="<select class='questionType' oninput='updateCode()'><option>chooseOne</option><option>enterText</option><option>selectMultiple</option></select><label>HTML: </label><input type='text' class='questionHtml' oninput='updateCode()'/><div class='answers'></div><button onclick='addAnswer(this)'>Add answer</button>"
+			var questionsEls=document.getElementsByClassName('questions')
+			for(var v=0;v<questionsEls.length;v++)
+				if(questionsEls[v].parentNode===th.parentNode)
+					questionsEls[v].appendChild(question)
+		}
+	button(onclick="addQuestion(this)") Add question

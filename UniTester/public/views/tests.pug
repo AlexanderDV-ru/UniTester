@@ -8,4 +8,5 @@ block inHead0
 
 block content
 	- for(var v=0;v<data.testsInfo.length;v++)
-		button(onclick="window.location.replace('/test?id="+data.testsInfo[v].id+"')") #{data.testsInfo[v].name} v#{data.testsInfo[v].version} by #{data.testsInfo[v].authors}, comitted by #{data.testsInfo[v].comitter}, id='#{data.testsInfo[v].id}'
+		button
+			a.nontexthref(href="/test?id="+data.testsInfo[v].id) #{data.testsInfo[v].name} v#{data.testsInfo[v].version} by #{data.testsInfo[v].authors}, comitted by #{data.testsInfo[v].comitter}, id='#{data.testsInfo[v].id}'
