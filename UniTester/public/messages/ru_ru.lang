@@ -1,3 +1,5 @@
+'currentLanguageName': 'Русский'
+
 'sitename': 'UniTester'
 'reloadpage': 'Перезагрузить страницу'
 'howToEnableJS': 'Как включить JavaScript'
@@ -57,11 +59,58 @@
 'fieldForTextAnswerEnter': 'Поле для ввода текста ответа'
 'answerVariantNumber': 'Вариант ответа № '
 
+//Testing result
+'minPointsLimit': 'Минимальное ограничение баллов'
+'minPoints': 'Минимум баллов'
+'defaultPoints': 'Стандартно баллов'
+'maxPoints': 'Максимум баллов'
+
+'pointsGetted': 'Баллов набрано'
+
+'pointsResulted': 'Баллов засчитано'
+
+'userAnswer': 'Ответ пользователя'
+'userAnswers': 'Ответы пользователя'
+
+'answerFromDate': 'Ответ от %0'
+
+//Test
+'getResult': 'Получить результат'
+'timeLimitInSeconds': 'Ограничение времени в секундах'
+'testingLogin': 'Логин тестируемого'
+
 'unlimited': 'Неограниченно'
 
+//Tests
+
+//Test creation
+'html': 'HTML'
+'points': 'Баллы'
+'type': 'Тип'
+
+'answer': 'Ответ'
+'answers': 'Ответы'
+'addAnswer': 'Добавить ответ'
+
+'question': 'Вопрос'
+'questions': 'Вопросы'
+'addQuestion': 'Добавить вопрос'
+
+'testIdentifier': 'Идентификатор теста'
 'testName': 'Название теста'
 'testVersion': 'Версия теста'
 'testAuthors': 'Авторы теста'
+
+//Question types
+'chooseOne': 'Выбор одного'
+'selectMultiple': 'Выбор нескольких'
+'enterText': 'Ввод текста'
+'distribution': 'Распределение'
+'matching': 'Сопоставление'
+'arrangement': 'Упорядочивание'
+
+//Testings
+
 
 'testCreatedSuccessfully': 'Тест успешно создан'
 
@@ -72,6 +121,14 @@
 //
 'error_testNotExist': 'Ошибка! Теста не существует'
 'error_questionNotExist': 'Ошибка! Вопроса не существует'
+'error_testingNotExist': 'Ошибка! Тестирования не существует'
+'error_onlyTestingUserCanSeeThisTesting': 'Ошибка! Только тестируемый пользователь может просматривать данное тестирование'
+
+'fillIdentifierFieldToSaveTest': 'Заполните поле идентификатора теста, чтобы сохранить тест!'
+'fillNameFieldToSaveTest': 'Заполните поле названия теста, чтобы сохранить тест!'
+'fillVersionFieldToSaveTest': 'Заполните поле версии теста, чтобы сохранить тест!'
+'fillAuthorsFieldToSaveTest': 'Заполните поле авторов теста, чтобы сохранить тест!'
+'fillCodeFieldToSaveTest': 'Заполните поле кода теста, чтобы сохранить тест!'
 
 'thisPageNotExists': 'Данной страницы не существует!'
 'requestedPage': 'Запрошенная страница - '%0''
@@ -79,8 +136,13 @@
 'thisTestNotExists': 'Данного теста не существует!'
 'requestedTest': 'Запрошенный тест - '%0''
 
+'thisTestingNotExists': 'Данного тестирования не существует!'
+'requestedTesting': 'Запрошенное тестирование - '%0''
+
 'thisQuestionNotExists': 'Данного вопроса не существует!'
 'requestedQuestion': 'Запрошенный вопрос - '%0''
+
+'youTryToOpenTestingOfOtherUser': 'Вы пытаетесь открыть тестирование другого пользователя!'
 
 'chemistryUtils': 'Химические утилиты'
 
@@ -90,6 +152,9 @@
 'enterOrderName': 'Введите название заказа'
 
 'createNewOrder': 'Создать новый заказ'
+
+'testingWithThisLoginNotExist': 'Тестируемого с этим логином не существует!'
+'testingStarted': 'Тестирование запущено!'
 
 'companyName': 'Название компании'
 'name': 'Название'

@@ -1,0 +1,14 @@
+extends /headered
+
+block title
+	title #{$msgs$.error_onlyTestingUserCanSeeThisTesting} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	h1 #{$msgs$.error_onlyTestingUserCanSeeThisTesting}:
+	br
+	label #{$msgs$.youTryToOpenTestingOfOtherUser}
+	br
+	label #{$msgs$.requestedTesting.replace("%0",data.requestedTesting)}

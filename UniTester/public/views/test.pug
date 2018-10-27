@@ -1,12 +1,16 @@
 extends /headered
 
 block title
-	title #{data.test.name} - #{$msgs$.sitename}
+	title #{data.test.name} - #{getMsg('sitename')}
 
 block inHead0
 	link(rel='stylesheet', href='/stylesheets/style2.css')
 
 block content
-	button(onclick="sendRequest('post','/startTesting','testId="+data.test._id+"')") #{$msgs$.startTesting}
+	label #{getMsg('timeLimitInSeconds')}
+	input#timeLimitInSeconds(type="text" oninput="if((this.value+'').replace(/([0-9]+)?/,'')==''&&Number.parseInt(this.value+'')>0||this.value=='')this.last=this.value;else if((this.last+'').replace(/([0-9]+)?/,'')==''&&Number.parseInt(this.last+'')>0||this.last=='') this.value=this.last;else this.value='';this.last=this.value" placeholder=getMsg('unlimited'))
+	label #{getMsg('testingLogin')}
+	input#testingLogin(type="text" required)
+	button(onclick="sendRequest('post','/startTesting','timeLimit='+document.getElementById('timeLimitInSeconds').value*1000+'&testingLogin='+document.getElementById('testingLogin').value+'&testId="+data.test._id+"',function(text){if(text=='ok'){alert(getMsg('testingStarted'))} else alert(getMsg(text))})") #{getMsg('startTesting')}
 	button
-		a.nontexthref(href="/testings?testId="+data.test._id) #{$msgs$.getTestings}
+		a.nontexthref(href="/testings?testId="+data.test._id) #{getMsg('getTestings')}

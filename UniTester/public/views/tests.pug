@@ -9,4 +9,4 @@ block inHead0
 block content
 	- for(var v=0;v<data.testsInfo.length;v++)
 		button
-			a.nontexthref(href="/test?id="+data.testsInfo[v].id) #{data.testsInfo[v].name} v#{data.testsInfo[v].version} by #{data.testsInfo[v].authors}, comitted by #{data.testsInfo[v].comitter}, id='#{data.testsInfo[v].id}'
+			a.nontexthref(href="/test?id="+data.testsInfo[v].id) #{data.testsInfo[v].name} v#{data.testsInfo[v].version} by #{data.testsInfo[v].authors}, committed by #{data.testsInfo[v].committer}, id='#{data.testsInfo[v].id}'

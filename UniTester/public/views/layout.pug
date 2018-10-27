@@ -2,8 +2,46 @@ doctype html
 html
 	head
 		include /protection
+		- var msgUtils={messages:$msgs$}
+		- delete $msgs$
+		- var getMsg=function(msg)
+			- return msgUtils.messages[msg]!==undefined&&msgUtils.messages[msg]!==null?msgUtils.messages[msg]:(msg==="error_messageUndefined"?"Error: message \'%0\' undefined!":getMsg("error_messageUndefined")).replace("%0",msg)
+		- var addZeros=function(enteredNumber, length)
+			- number=enteredNumber
+			- if(!length)
+				- length=2
+			- if(typeof(number)=='number')
+				- if(Number.isNaN(number)||!Number.isFinite(number))
+					- return enteredNumber
+				- else number=number+''
+			- else if(typeof(number)=='string')
+				- if(Number.isNaN(Number.parseInt(number+''))||!Number.isFinite(Number.parseInt(number+'')))
+					- return enteredNumber
+				- else number=Number.parseInt(number+'')+''
+			- if(number.replace(/[0-9]+/,'')!='')
+				- return enteredNumber
+			- for(;number.length<length;number="0"+number)
+			- return number
+		- var formatDate=function(enteredDate, format)
+			- date=enteredDate
+			- if(typeof(date)=='number')
+				- if(Number.isNaN(date)||!Number.isFinite(date))
+					- return enteredDate
+				- else date=new Date(date)
+			- else if(typeof(date)=='string')
+				- if(Number.isNaN(Number.parseInt(date+''))||!Number.isFinite(Number.parseInt(date+'')))
+					- return enteredDate
+				- else date=new Date(Number.parseInt(date+''))
+			- else if(!(date instanceof Date))
+				- return enteredDate
+			- if(!format)
+				- return addZeros(date.getFullYear(),4)+"."+addZeros(date.getMonth()+1)+"."+addZeros(date.getDate())+" "+addZeros(date.getHours())+":"+addZeros(date.getMinutes())+" "+addZeros(date.getSeconds())
+		script!= 'var msgUtils='+JSON.stringify(msgUtils)
+		script!= "var formatDate="+formatDate+", getMsg="+getMsg+", addZeros="+addZeros
+		include /protection
 		block title
 			title Title not setted!
+		style *{opacity:0}
 		link(rel='stylesheet', href='/stylesheets/style.css')
 		block inHead0
 		block inHead1
@@ -23,14 +61,7 @@ html
 					a(href="//yandex.ru/search/?text="+$msgs$.howToEnableJS) #{$msgs$.findInYandex}
 		div#onjsenabled(style="display: none")
 			include /protection
-			script!= 'var $msgs$='+JSON.stringify($msgs$)
-			include /protection
 			script!= 'var requestQuery='+JSON.stringify(requestQuery)
-			script. 
-				var getMsg=function(msg)
-				{
-					return $msgs$[msg]!==undefined&&$msgs$[msg]!==null?$msgs$[msg]:(msg==="error_messageUndefined"?"Error: message \'%0\' undefined!":getMsg("error_messageUndefined")).replace("%0",msg)
-				}
 			include /protection
 			script.
 				function sendRequest(type, requestPath, requestArgs, func)

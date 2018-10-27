@@ -1,0 +1,40 @@
+extends /headered
+
+block title
+	title #{$msgs$.testingResult} - #{$msgs$.sitename}
+
+block inHead0
+	link(rel='stylesheet', href='/stylesheets/style2.css')
+
+block content
+	table.tableWith10pxBorder
+		- for(var props="minPointsLimit minPoints defaultPoints maxPoints pointsGetted pointsResulted".split(" "),v2=0;v2<props.length;v2++)
+			tr
+				td #{getMsg(props[v2])}
+				td.elementWithLeftBorder #{data.testingResult[props[v2]]}
+		tr
+			td #{getMsg('questions')}
+			td.elementWithLeftBorder
+				table.tableWith10pxBorder
+					- for(var v=0;v<data.testingResult.questions.length;v++)
+						tr
+							td #{getMsg('questionNumber')}#{v}
+							td.elementWithLeftBorder
+								table.tableWith10pxBorder
+									- for(var props="minPointsLimit minPoints defaultPoints maxPoints pointsGetted pointsResulted".split(" "),v2=0;v2<props.length;v2++)
+										tr
+											td #{getMsg(props[v2])}
+											td.elementWithLeftBorder #{data.testingResult.questions[v][props[v2]]}
+									tr
+										td #{getMsg('userAnswers')}
+										td.elementWithLeftBorder
+											table.tableWith10pxBorder
+												- for(var v1=0;v1<data.testingResult.questions[v].answers.length;v1++)
+													tr
+														td #{getMsg('answerFromDate').replace('%0',formatDate(data.testingResult.questions[v].answers[v1].date))}
+														td.elementWithLeftBorder
+															table.tableWith10pxBorder
+																- for(var props="pointsGetted userAnswer".split(" "),v2=0;v2<props.length;v2++)
+																	tr
+																		td #{getMsg(props[v2])}
+																		td.elementWithLeftBorder #{data.testingResult.questions[v].answers[v1][props[v2]]}

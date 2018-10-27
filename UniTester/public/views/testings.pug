@@ -8,5 +8,8 @@ block inHead0
 
 block content
 	- for(var v=0;v<data.testingsInfo.length;v++)
+		label #{data.testingsInfo[v].id}
 		button
-			a.nontexthref(href="/testing?id="+data.testingsInfo[v].id+"&questionNumber=0") #{$msgs$.openTesting} '#{data.testingsInfo[v].id}'
+			a.nontexthref(href="/testing?id="+data.testingsInfo[v].id+"&questionNumber=0") #{$msgs$.openTesting}
+		button
+			a.nontexthref(href="/testingResult?id="+data.testingsInfo[v].id+"&questionNumber=0") #{$msgs$.getResult}

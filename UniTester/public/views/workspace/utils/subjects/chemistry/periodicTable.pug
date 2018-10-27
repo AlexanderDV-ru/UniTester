@@ -1,7 +1,7 @@
 extends /headered
 
 block title
-	title #{$msgs$.periodicTable} - #{$msgs$.sitename}
+	title #{getMsg('periodicTable')} - #{getMsg('sitename')}
 
 block inHead0
 	link(rel='stylesheet', href='/stylesheets/style2.css')
@@ -58,7 +58,7 @@ block content
 												td
 													include /chemicalFormulaInput
 												td
-													input(type="submit" value=$msgs$.getDescription)
+													input(type="submit" value=getMsg('getDescription'))
 							tr
 								td
 									table

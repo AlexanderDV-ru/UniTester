@@ -14,7 +14,7 @@ block jsEnabledContent
 					br
 					span(style="font-size: 14px;") #{data.userLogin}
 		div(style="height: 5px")
-	div#accountinfo(tabindex="0" zindex=100 style="display: none; position: absolute; top: 64px; right: 0px; padding: 5px; background-color: #5AA0F0;")
+	div#accountinfo(tabindex="0" style="z-index: 100;display: none; position: absolute; top: 64px; right: 0px; padding: 5px; background-color: #5AA0F0;")
 		a.greenButton(href="/signout") #{$msgs$.signout}
 	script(type="text/javascript").
 		var focused

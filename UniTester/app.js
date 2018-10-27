@@ -33,7 +33,7 @@ var mongoDBClient
 var callingUrls = []
 
 // all environments
-application.set('port', process.env.PORT || 2222)
+application.set('port', ifNoneValueThan(process.env.PORT, 2222))
 application.set('views', __dirname + '/public/views')
 application.locals.basedir = application.get('views')
 application.set('view engine', 'pug')
@@ -85,7 +85,7 @@ var getMsgs = exports.getMsgs = function(language, path)
 
 function replaceMsgs(text, language)
 {
-	language = language || "ru_ru"
+	language = ifNoneValueThan(language, "ru_ru")
 	var msgs = getMsgs(language);
 	for ( var key in msgs)
 		text = text.replace(new RegExp("\\$msg\\." + key + "\\$", "g"), msgs[key]);
@@ -111,7 +111,7 @@ var defaultOnNotSignedIn = function(request, response, perms, account)
 				userSecondName : account.secondName,
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		})
 	}
@@ -128,7 +128,7 @@ var defaultOnNotSignedIn = function(request, response, perms, account)
 				userSecondName : account.secondName,
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		})
 	}
@@ -307,7 +307,7 @@ get([ '/signin', '/signin/info/[^/\?]+', '/signin/error/[^/\?]+', '/signin/ok/[^
 			userSecondName : null,
 		},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	});
 }, undefined, undefined, undefined, true)
@@ -397,7 +397,7 @@ get([ '/accounts/management', '/accounts/management/info/[^/\?]+/[^/\?]+', '/acc
 				accounts : accounts
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		});
 	});
@@ -649,7 +649,7 @@ get('/workspace/utils/subjects/chemistry/formulaDescription', function(request, 
 				userSecondName : account.secondName
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		})
 	})
@@ -667,7 +667,7 @@ get('/info', function(request, response, perms, account, user)
 			userSecondName : account.secondName
 		} : {},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	})
 }, undefined, undefined, undefined, true)
@@ -785,7 +785,7 @@ get('/workspace/utils/subjects/chemistry/elementInfo/[A-Z][a-z]{0,3}', function(
 			chemAPI : chemAPI
 		},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	})
 }, [ "workspace.utils.subjects.chemistry.elementInfo" ])
@@ -819,7 +819,7 @@ get('/workspace/utils/subjects/chemistry/periodicTable', function(request, respo
 				periodicTableSettings : !saveChemSettings[0] ? {} : saveChemSettings[0].data
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		})
 	})
@@ -876,7 +876,7 @@ get('/workspace/utils/subjects/chemistry', function(request, response, perms, ac
 			}
 		},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	})
 }, [ "workspace.utils.subjects.chemistry" ])
@@ -924,7 +924,7 @@ get([ '/accounts/management/exists/[a-zA-Z0-9]+', '/accounts/management/exists/[
 					accountLogin : urlLogin
 				},
 
-				requestQuery : request.query || {},
+				requestQuery : ifNoneValueThan(request.query, {}),
 				$msgs$ : getMsgs("ru_ru")
 			});
 		else
@@ -945,7 +945,7 @@ get([ '/accounts/management/exists/[a-zA-Z0-9]+', '/accounts/management/exists/[
 					accountLogin : urlLogin
 				},
 
-				requestQuery : request.query || {},
+				requestQuery : ifNoneValueThan(request.query, {}),
 				$msgs$ : getMsgs("ru_ru")
 			});
 		}
@@ -973,7 +973,7 @@ get('/accounts/management/changepassword/[a-zA-Z0-9]+', function(request, respon
 					accountLogin : urlLogin
 				},
 
-				requestQuery : request.query || {},
+				requestQuery : ifNoneValueThan(request.query, {}),
 				$msgs$ : getMsgs("ru_ru")
 			});
 		else
@@ -990,7 +990,7 @@ get('/accounts/management/changepassword/[a-zA-Z0-9]+', function(request, respon
 					accountLogin : urlLogin
 				},
 
-				requestQuery : request.query || {},
+				requestQuery : ifNoneValueThan(request.query, {}),
 				$msgs$ : getMsgs("ru_ru")
 			});
 		}
@@ -1169,7 +1169,7 @@ get('/workspace', function(request, response, perms, account)
 					groupsPerms : groupsPerms
 				},
 
-				requestQuery : request.query || {},
+				requestQuery : ifNoneValueThan(request.query, {}),
 				$msgs$ : getMsgs("ru_ru")
 			})
 	}
@@ -1392,7 +1392,7 @@ get('/getdata', function(request, response, perms, account, user)
 			if (orders[0] ? orders[0].data : false)
 			{
 				var orderData = orders[0].data;
-				for (var v = 0; v < orderData.length; v++)
+				for (var v = 0; v < orderlength; v++)
 					for ( var key in orderData[v])
 						if (key != '_id')
 							data += v + "_" + key + "=" + orderData[v][key] + "&";
@@ -1619,7 +1619,7 @@ get('/workspace/student', function(request, response, perms, account)
 			userSecondName : account.secondName
 		},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	});
 }, [ "workspace.student" ]);
@@ -1646,7 +1646,7 @@ get('/workspace/teacher', function(request, response, perms, account)
 				}
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		})
 	})
@@ -1654,6 +1654,144 @@ get('/workspace/teacher', function(request, response, perms, account)
 
 var defaultTestSettings = {}
 var defaultTestingSettings = {}
+
+get('/testingResult', function(request, response, perms, account)
+{
+	function render(test, testingsData, testing)
+	{
+		var testingResult =
+		{
+			questions : [],
+
+			minPointsLimit : test.minPointsLimit,
+			defaultPoints : 0,
+			minPoints : 0,
+			maxPoints : 0,
+
+			pointsGetted : 0,
+			pointsResulted : 0
+		}
+		var testingsDataSorted = []
+		for (var v = 0; v < testingsData.length; v++)
+		{
+			if (!testingsDataSorted[testingsData[v].questionNumber])
+				testingsDataSorted[testingsData[v].questionNumber] = []
+			testingsDataSorted[testingsData[v].questionNumber].push(testingsData[v])
+		}
+		for (var v = 0; v < testingsDataSorted.length; v++)
+		{
+			testingsDataSorted[v].sort(function(a, b)
+			{
+				return a.date.getTime() - b.date.getTime()
+			})
+			function getPointsForQuestion(userAnswerNumber)
+			{
+				var points = 0
+				for (var v1 = 0; v1 < test.testQuestions[v].answerVariants.length; v1++)
+				{
+					var answerVariant = test.testQuestions[v].answerVariants[v1]
+					if (testingsDataSorted[v][userAnswerNumber].userAnswer instanceof Array)
+					{
+						for (var v2 = 0; v2 < testingsDataSorted[v][userAnswerNumber].userAnswer.length; v2++)
+							if (answerVariant.html == testingsDataSorted[v][userAnswerNumber].userAnswer[v2])
+								points += test.testQuestions[v].answerVariants[v1].points
+					}
+					else if (typeof (testingsDataSorted[v][userAnswerNumber].userAnswer) == "string")
+						if (answerVariant.html == testingsDataSorted[v][userAnswerNumber].userAnswer)
+							points = answerVariant.points
+				}
+				return points
+			}
+			testingResult.questions[v] =
+			{
+				minPointsLimit : test.testQuestions[v].minPointsLimit,
+				defaultPoints : test.testQuestions[v].defaultPoints,
+				minPoints : test.testQuestions[v].minPoints,
+				maxPoints : test.testQuestions[v].maxPoints,
+
+				pointsGetted : 0,
+				pointsResulted : 0,
+
+				answers : []
+			}
+			testingResult.defaultPoints += testingResult.questions[v].defaultPoints
+			testingResult.minPoints += testingResult.questions[v].minPoints
+			testingResult.maxPoints += testingResult.questions[v].maxPoints
+			function create(v1, func)
+			{
+				testingResult.questions[v].answers[v1] =
+				{
+					pointsGetted : getPointsForQuestion(v1),
+
+					userAnswer : testingsDataSorted[v][v1].userAnswer,
+
+					date : testingsDataSorted[v][v1].date
+				}
+				if (func)
+					func(testingResult.questions[v].answers[v1].pointsGetted)
+			}
+			for (var v1 = 0; v1 < testingsDataSorted[v].length - 1; v1++)
+				create(v1)
+			create(testingsDataSorted[v].length - 1, function(aw)
+			{
+				testingResult.questions[v].pointsGetted = aw
+				testingResult.questions[v].pointsResulted = Math.max(aw, testingResult.questions[v].minPointsLimit)
+				testingResult.pointsGetted += testingResult.questions[v].pointsGetted
+				testingResult.pointsResulted += testingResult.questions[v].pointsResulted
+			})
+		}
+		testingResult.pointsResulted = Math.max(testingResult.pointsResulted, testingResult.minPointsLimit)
+		response.render("testingResult",
+		{
+			data :
+			{
+				userLogin : account.login,
+				userSurname : account.surname,
+				userName : account.name,
+				userSecondName : account.secondName,
+
+				testingResult : testingResult
+			},
+
+			requestQuery : ifNoneValueThan(request.query, {}),
+			$msgs$ : getMsgs("ru_ru")
+		})
+	}
+	var count = 0
+	var test, testingsData, testing
+	collection("testingsData").find(
+	{
+		testingId : request.query.id
+	}).toArray(function(err, testingsData2)
+	{
+		testingsData = testingsData2
+		count++
+		if (count == 3)
+			render(test, testingsData, testing)
+	})
+
+	collection("testings").find(
+	{
+		_id : new mongoDBmodule.ObjectID(request.query.id)
+	}).toArray(function(err, testings)
+	{
+		testing = testings[0]
+		count++
+		if (count == 3)
+			render(test, testingsData, testing)
+		if (testings[0])
+			collection("tests").find(
+			{
+				_id : new mongoDBmodule.ObjectID(testings[0].testId)
+			}).toArray(function(err, tests)
+			{
+				test = tests[0]
+				count++
+				if (count == 3)
+					render(test, testingsData, testing)
+			})
+	})
+})
 
 get('/testing', function(request, response, perms, account)
 {
@@ -1663,49 +1801,66 @@ get('/testing', function(request, response, perms, account)
 	}).toArray(function(err, testings)
 	{
 		if (testings[0])
-			collection("tests").find(
+			if ((testings[0].testingLogin + "").toLowerCase() == account.login.toLowerCase())
 			{
-				_id : new mongoDBmodule.ObjectID(testings[0].testId)
-			}).toArray(function(err, tests)
-			{
-				if (tests[0])
-					if (request.query.questionNumber >= 0 && request.query.questionNumber < tests[0].testQuestions.length)
-						collection("testsSettings").find(
-						{
-							_id : new mongoDBmodule.ObjectID(testings[0].testSettingsId)
-						}).toArray(function(err, testsSettings)
-						{
-							collection("testingsSettings").find(
+				collection("tests").find(
+				{
+					_id : new mongoDBmodule.ObjectID(testings[0].testId)
+				}).toArray(function(err, tests)
+				{
+					if (tests[0])
+						if (request.query.questionNumber >= 0 && request.query.questionNumber < tests[0].testQuestions.length)
+							collection("testsSettings").find(
 							{
-								_id : new mongoDBmodule.ObjectID(testings[0].testingSettingsId)
-							}).toArray(function(err, testingsSettings)
+								_id : new mongoDBmodule.ObjectID(testings[0].testSettingsId)
+							}).toArray(function(err, testsSettings)
 							{
-								response.render("testing",
+								collection("testingsSettings").find(
 								{
-									data :
+									_id : new mongoDBmodule.ObjectID(testings[0].testingSettingsId)
+								}).toArray(function(err, testingsSettings)
+								{
+									response.render("testing",
 									{
-										userLogin : account.login,
-										userSurname : account.surname,
-										userName : account.name,
-										userSecondName : account.secondName,
-
-										test :
+										data :
 										{
-											questionsCount : tests[0].testQuestions.length,
-											testQuestionNumber : request.query.questionNumber,
-											testQuestion : tests[0].testQuestions[request.query.questionNumber]
-										},
-										testing : testings[0],
-										testSettings : testsSettings[0] || defaultTestSettings,
-										testingSettings : testingsSettings[0] || defaultTestingSettings
-									},
+											userLogin : account.login,
+											userSurname : account.surname,
+											userName : account.name,
+											userSecondName : account.secondName,
 
-									requestQuery : request.query || {},
-									$msgs$ : getMsgs("ru_ru")
+											test :
+											{
+												questionsCount : tests[0].testQuestions.length,
+												testQuestionNumber : request.query.questionNumber,
+												testQuestion : tests[0].testQuestions[request.query.questionNumber]
+											},
+											testing : testings[0],
+											testSettings : ifNoneValueThan(testsSettings[0], defaultTestSettings),
+											testingSettings : ifNoneValueThan(testingsSettings[0], defaultTestingSettings),
+										},
+
+										requestQuery : ifNoneValueThan(request.query, {}),
+										$msgs$ : getMsgs("ru_ru")
+									})
 								})
 							})
+						else response.render('questionNotExist',
+						{
+							data :
+							{
+								userLogin : account.login,
+								userSurname : account.surname,
+								userName : account.name,
+								userSecondName : account.secondName,
+
+								requestedQuestion : request.query.questionNumber
+							},
+
+							requestQuery : ifNoneValueThan(request.query, {}),
+							$msgs$ : getMsgs("ru_ru")
 						})
-					else response.render('questionNotExist',
+					else response.render('testNotExist',
 					{
 						data :
 						{
@@ -1714,27 +1869,28 @@ get('/testing', function(request, response, perms, account)
 							userName : account.name,
 							userSecondName : account.secondName,
 
-							requestedQuestion : request.query.questionNumber
+							requestedTest : testings[0].testId
 						},
 
-						requestQuery : request.query || {},
+						requestQuery : ifNoneValueThan(request.query, {}),
 						$msgs$ : getMsgs("ru_ru")
 					})
-				else response.render('testNotExist',
-				{
-					data :
-					{
-						userLogin : account.login,
-						userSurname : account.surname,
-						userName : account.name,
-						userSecondName : account.secondName,
-
-						requestedTest : testings[0].testId
-					},
-
-					requestQuery : request.query || {},
-					$msgs$ : getMsgs("ru_ru")
 				})
+			}
+			else response.render('onlyTestingUserCanSeeThisTesting',
+			{
+				data :
+				{
+					userLogin : account.login,
+					userSurname : account.surname,
+					userName : account.name,
+					userSecondName : account.secondName,
+
+					requestedTesting : request.query.id
+				},
+
+				requestQuery : ifNoneValueThan(request.query, {}),
+				$msgs$ : getMsgs("ru_ru")
 			})
 		else response.render('testingNotExist',
 		{
@@ -1748,41 +1904,83 @@ get('/testing', function(request, response, perms, account)
 				requestedTesting : request.query.id
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		})
 	})
 }, [])
 
+post('/testing', function(request, response, perms, account)
+{
+	collection("testings").find(
+	{
+		_id : new mongoDBmodule.ObjectID(request.body.testingId)
+	}).toArray(function(err, testings)
+	{
+		if ((testings[0].testingLogin + "").toLowerCase() == account.login.toLowerCase())
+		{
+			collection("testingsData").insertOne(
+			{
+				testingId : request.body.testingId,
+				questionNumber : request.body.questionNumber,
+				date : new Date(),
+				userAnswer : function()
+				{
+					try
+					{
+						return JSON.parse(request.body.userAnswer)
+					}
+					catch (e)
+					{
+					}
+				}(),
+				userLogin : account.login
+			})
+			response.end('ok')
+		}
+		else response.end('onlyTestingUserCanSendAnswersForThisTesting')
+	})
+}, [])
+
 post('/startTesting', function(request, response, perms, account)
 {
-	var testing = (
+	collection('accounts').find(
 	{
-		initiatorLogin : account.login,
-		date : new Date(),
+		login : new RegExp("^" + request.body.testingLogin + "$", 'i')
+	}).toArray(function(err, accounts)
+	{
+		if (accounts[0])
+		{
+			var testing = (
+			{
+				initiatorLogin : account.login,
+				date : new Date(),
 
-		testingLogin : request.body.testingLogin,
+				testingLogin : request.body.testingLogin,
 
-		minimalStartingDate : request.body.minimalStartingDate,
-		maximalStartingDate : request.body.maximalStartingDate,
+				minimalStartingDate : request.body.minimalStartingDate,
+				maximalStartingDate : request.body.maximalStartingDate,
 
-		minimalStartingTime : request.body.minimalStartingTime,
-		maximalStartingTime : request.body.maximalStartingTime,
+				minimalStartingTime : request.body.minimalStartingTime,
+				maximalStartingTime : request.body.maximalStartingTime,
 
-		minimalEndingDate : request.body.minimalEndingDate,
-		maximalEndingDate : request.body.maximalEndingDate,
+				minimalEndingDate : request.body.minimalEndingDate,
+				maximalEndingDate : request.body.maximalEndingDate,
 
-		minimalEndingTime : request.body.minimalEndingTime,
-		maximalEndingTime : request.body.maximalEndingTime,
+				minimalEndingTime : request.body.minimalEndingTime,
+				maximalEndingTime : request.body.maximalEndingTime,
 
-		timeLimit : request.body.timeLimit,
+				timeLimit : (request.body.timeLimit + "").replace(/([+|-])?([0-9]+)?[.]?([0-9]+)?/, '') == '' && Math.abs(Math.floor(Number.parseFloat(request.body.timeLimit + ""))) >= 5000 ? Math.abs(Math.floor(Number.parseFloat(request.body.timeLimit + ""))) : 'unlimited',
 
-		testId : request.body.testId,
-		testSettingsId : request.body.testSettingsId,
-		testingSettingsId : request.body.testingSettingsId
+				testId : request.body.testId,
+				testSettingsId : request.body.testSettingsId,
+				testingSettingsId : request.body.testingSettingsId
+			})
+			collection("testings").insertOne(testing)
+			response.end('ok')
+		}
+		else response.end('testingWithThisLoginNotExist')
 	})
-	collection("testings").insertOne(testing)
-	response.end('ok')
 }, [])
 
 get('/testCreation', function(request, response, perms, account)
@@ -1797,7 +1995,7 @@ get('/testCreation', function(request, response, perms, account)
 			userSecondName : account.secondName
 		},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	})
 }, [])
@@ -1864,6 +2062,19 @@ function getLastTestOfIdentifier(identifier, func)
 	})
 }
 
+function accountHasAccessForTest(account, test)
+{
+	if ((test.committer + "").toLowerCase() == account.login.toLowerCase())
+		return true
+	if (typeof (test.access) == "object")
+		for ( var v in test.access)
+			if ((v + "").toLowerCase() == account.login.toLowerCase())
+				return test.access[v]
+	if (test.isPublic)
+		return true
+	return false
+}
+
 get('/test', function(request, response, perms, account)
 {
 	collection("tests").find(
@@ -1871,21 +2082,22 @@ get('/test', function(request, response, perms, account)
 		_id : new mongoDBmodule.ObjectID(request.query.id)
 	}).toArray(function(err, tests)
 	{
-		response.render("test",
-		{
-			data :
+		if (accountHasAccessForTest(account, tests[0]))
+			response.render("test",
 			{
-				userLogin : account.login,
-				userSurname : account.surname,
-				userName : account.name,
-				userSecondName : account.secondName,
+				data :
+				{
+					userLogin : account.login,
+					userSurname : account.surname,
+					userName : account.name,
+					userSecondName : account.secondName,
 
-				test : tests[0]
-			},
+					test : tests[0]
+				},
 
-			requestQuery : request.query || {},
-			$msgs$ : getMsgs("ru_ru")
-		})
+				requestQuery : ifNoneValueThan(request.query, {}),
+				$msgs$ : getMsgs("ru_ru")
+			})
 	})
 }, [])
 
@@ -1918,7 +2130,7 @@ get('/testings', function(request, response, perms, account)
 				testingsInfo : testingsInfo
 			},
 
-			requestQuery : request.query || {},
+			requestQuery : ifNoneValueThan(request.query, {}),
 			$msgs$ : getMsgs("ru_ru")
 		})
 	})
@@ -1943,7 +2155,7 @@ get('/tests', function(request, response, perms, account)
 					testsInfo : testsInfo
 				},
 
-				requestQuery : request.query || {},
+				requestQuery : ifNoneValueThan(request.query, {}),
 				$msgs$ : getMsgs("ru_ru")
 			})
 		}
@@ -1960,14 +2172,8 @@ get('/tests', function(request, response, perms, account)
 			{
 				getLastTestOfIdentifier(identifiersArray[v], function(test)
 				{
-					testsInfo.push(
-					{
-						name : test.name,
-						authors : test.authors,
-						version : test.version,
-						id : test._id,
-						comitter : test.comitterLogin
-					})
+					if (accountHasAccessForTest(account, test))
+						testsInfo.push(testToTestInfo(test))
 					count++
 					if (count == identifiersArray.length)
 						render()
@@ -1977,49 +2183,106 @@ get('/tests', function(request, response, perms, account)
 				next(v)
 		}
 		else for (var v = 0; v < tests.length; v++)
-			testsInfo.push(
-			{
-				name : tests[v].name,
-				authors : tests[v].authors,
-				version : tests[v].version,
-				id : tests[v]._id,
-				comitter : tests[v].comitterLogin
-			})
+			if (accountHasAccessForTest(account, tests[v]))
+				testsInfo.push(testToTestInfo(tests[v]))
 	})
 }, [])
 
+function testToTestInfo(test)
+{
+	return (
+	{
+		family : test.family,
+		name : test.name,
+		authors : test.authors,
+		version : test.version,
+		id : test._id,
+		committer : test.committer
+	})
+}
+
 post('/testCreation', function(request, response, perms, account)
 {
-	var testDB = request.body
+	var testDB = request.body, object, code, json
 	try
 	{
-		testDB.object = JSON.parse(testDB.code)
+		code = testDB.code
+		object = JSON.parse(testDB.code)
 	}
 	catch (e)
 	{
 		return response.end(e + "")
 	}
-	testDB.json = JSON.stringify(testDB.object)
-	for ( var v in testDB.object)
-		testDB[v] = testDB.object[v]
-	testDB.comitterLogin = account.login
+	json = JSON.stringify(testDB.object)
+	for ( var v in object)
+		testDB[v] = object[v]
+	testDB.code = code
+	testDB.object = object
+	testDB.json = json
+
+	testDB.minPointsLimit = ifWrongTypeValueThan(testDB.minPointsLimit, "number", -Infinity)
+	for (var v = 0; v < testDB.testQuestions.length; v++)
+	{
+		testDB.testQuestions[v].minPointsLimit = ifWrongTypeValueThan(testDB.testQuestions[v].minPointsLimit, "number", -Infinity)
+		testDB.testQuestions[v].defaultPoints = ifWrongTypeValueThan(testDB.testQuestions[v].defaultPoints, "number", 0)
+		testDB.testQuestions[v].minPoints = function()
+		{
+			var count = 0
+			switch (testDB.testQuestions[v].type)
+			{
+				case 'chooseOne':
+					for (var v1 = 0; v1 < testDB.testQuestions[v].answerVariants.length; v1++)
+						count = Math.min(count, testDB.testQuestions[v].answerVariants[v1].points)
+					break
+				case 'selectMultiple':
+					for (var v1 = 0; v1 < testDB.testQuestions[v].answerVariants.length; v1++)
+						count += Math.min(0, testDB.testQuestions[v].answerVariants[v1].points)
+					break
+			}
+			return testDB.testQuestions[v].defaultPoints + count
+		}()
+		testDB.testQuestions[v].maxPoints = function()
+		{
+			var count = 0
+			switch (testDB.testQuestions[v].type)
+			{
+				case 'chooseOne':
+					for (var v1 = 0; v1 < testDB.testQuestions[v].answerVariants.length; v1++)
+						count = Math.max(count, testDB.testQuestions[v].answerVariants[v1].points)
+					break
+				case 'selectMultiple':
+					for (var v1 = 0; v1 < testDB.testQuestions[v].answerVariants.length; v1++)
+						count += Math.max(0, testDB.testQuestions[v].answerVariants[v1].points)
+					break
+			}
+			return testDB.testQuestions[v].defaultPoints + count
+		}()
+	}
+	testDB.committer = account.login
 	collection("tests").insertOne(testDB)
 	return response.end("ok")
 }, [])
 
-post('/testing', function(request, response, perms, account)
+function ifNoneValueThan(testing, def)
 {
-	collection("testingsData").insertOne(
-	{
-		testingId : request.body.testingId,
-		questionNumber : request.body.questionNumber,
-		date : new Date(),
-		userAnswer : request.body.userAnswer,
-		userLogin : account.login,
-		body : request.body
-	})
-	response.end('ok')
-}, [])
+	if(testing===undefined||testing===null)
+		return def
+	return testing
+}
+
+function ifWrongTypeValueThan(testing, type, def)
+{
+	if(typeof(testing)!==type)
+		return def
+	return testing
+}
+
+function ifTypeValueThan(testing, type, def)
+{
+	if(typeof(testing)===type)
+		return def
+	return testing
+}
 
 get('/workspace/dataCollector', function(request, response, perms, account)
 {
@@ -2033,7 +2296,7 @@ get('/workspace/dataCollector', function(request, response, perms, account)
 			userSecondName : account.secondName
 		},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	})
 }, [ "workspace.dataCollector" ])
@@ -2050,7 +2313,7 @@ get('/workspace/admin', function(request, response, perms, account)
 			userSecondName : account.secondName
 		},
 
-		requestQuery : request.query || {},
+		requestQuery : ifNoneValueThan(request.query, {}),
 		$msgs$ : getMsgs("ru_ru")
 	});
 }, [ "workspace.admin" ]);
@@ -2083,7 +2346,7 @@ application.use(function(request, response, next)
 					requestedUrl : request.url.substring(path.length)
 				},
 
-				requestQuery : request.query || {},
+				requestQuery : ifNoneValueThan(request.query, {}),
 				$msgs$ : getMsgs("ru_ru")
 			});
 		},

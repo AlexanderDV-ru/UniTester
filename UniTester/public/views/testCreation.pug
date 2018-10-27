@@ -1,7 +1,7 @@
 extends /headered
 
 block title
-	title #{$msgs$.testCreation} - #{$msgs$.sitename}
+	title #{getMsg('testCreation')} - #{getMsg('sitename')}
 
 block inHead0
 	link(rel='stylesheet', href='/stylesheets/style2.css')
@@ -10,21 +10,22 @@ block content
 	table
 		tr
 			td
-				label #{$msgs$.testIdentifier}
+				label #{getMsg('testIdentifier')}
 			td
 				input#testIdentifier
+		tr
 			td
-				label #{$msgs$.testName}
+				label #{getMsg('testName')}
 			td
 				input#testName
 		tr
 			td
-				label #{$msgs$.testVersion}
+				label #{getMsg('testVersion')}
 			td
 				input#testVersion
 		tr
 			td
-				label #{$msgs$.testAuthors}
+				label #{getMsg('testAuthors')}
 			td
 				input#testAuthors
 	textarea#codeArea
@@ -32,53 +33,67 @@ block content
 		function saveTestClick()
 		{
 			if(document.getElementById('testName').value=='')
-				alert($msgs$.fillNameFieldToSaveTest)
+				alert(getMsg('fillNameFieldToSaveTest'))
 			else if(document.getElementById('testIdentifier').value=='')
-				alert($msgs$.fillIdentifierFieldToSaveTest)
+				alert(getMsg('fillIdentifierFieldToSaveTest'))
 			else if(document.getElementById('testVersion').value=='')
-				alert($msgs$.fillVersionFieldToSaveTest)
+				alert(getMsg('fillVersionFieldToSaveTest'))
 			else if(document.getElementById('testAuthors').value=='')
-				alert($msgs$.fillAuthorsFieldToSaveTest)
+				alert(getMsg('fillAuthorsFieldToSaveTest'))
 			else if(document.getElementById('codeArea').value=='')
-				alert($msgs$.fillCodeFieldToSaveTest)
+				alert(getMsg('fillCodeFieldToSaveTest'))
 			else sendRequest('post', '/testCreation', 'code='+encodeURIComponent(document.getElementById('codeArea').value)+"&name="+encodeURIComponent(document.getElementById('testName').value)+"&identifier="+encodeURIComponent(document.getElementById('testIdentifier').value)+"&version="+encodeURIComponent(document.getElementById('testVersion').value)+"&authors="+encodeURIComponent(document.getElementById('testAuthors').value), function(text)
 			{
-				alert(text!=="ok"?text:$msgs$.testCreatedSuccessfully)
+				alert(text!=="ok"?text:getMsg('testCreatedSuccessfully'))
 			})
 		}
-	button(onclick="saveTestClick()") #{$msgs$.saveTest}
+	button(onclick="saveTestClick()") #{getMsg('saveTest')}
 	label Code generator
 	textarea#generatedCode(disabled=true)
-	div.questions
+	table.tableWith10pxBorder
+		tr
+			td #{getMsg('minPointsLimit')}
+			td.elementWithLeftBorder
+				input.testMinPointsLimit(type='text' oninput='updateCode()')
+		tr
+			td #{getMsg('questions')}
+			td.elementWithLeftBorder
+				table.questions.tableWith10pxBorder(style="max-width: 0px;")
+				button(onclick="addQuestion(this)") #{getMsg('addQuestion')}
 	script.
-		function ifNanThanZero(n)
+		function ifNanThanDefault(n, def)
 		{
 			n=Number.parseFloat(n+"")
-			return Number.isNaN(n)?0:n
+			return Number.isNaN(n)?def:n
 		}
 		function updateCode()
 		{
-			var val='{\n\t"testQuestions" : [\n%0\n\t]\n}'
+			var val='{\n\t"minPointsLimit" : '+ifNanThanDefault(Number.parseFloat(document.getElementsByClassName('testMinPointsLimit')[0].value),-Infinity)+',\n\t"testQuestions" : [\n%0\n\t]\n}'
 			var qT=""
 			var els=document.getElementsByClassName('questionHtml')
 			for(var v=0;v<els.length;v++)
 			{
-				var qqT=(v!=0?',\n':'')+'\t\t{\n\t\t\t"type" : "'+document.getElementsByClassName('questionType')[v].value+'",\n\t\t\t"question" :\n\t\t\t{\n\t\t\t\t"html" : "'+els[v].value+'"\n\t\t\t},\n\t\t\t"answerVariants" : [\n%1\n\t\t\t]\n\t\t}'
+				var qqT=(v!=0?',\n':'')+'\t\t{\n\t\t\t"minPointsLimit" : '+ifNanThanDefault(Number.parseFloat(document.getElementsByClassName('questionMinPointsLimit')[v].value),-Infinity)+',\n\t\t\t"type" : "'+document.getElementsByClassName('questionType')[v].value+'",\n\t\t\t"question" :\n\t\t\t{\n\t\t\t\t"html" : "'+els[v].value+'"\n\t\t\t},\n\t\t\t"answerVariants" : [\n%1\n\t\t\t]\n\t\t}'
 				var val2=""
 				var answerss=document.getElementsByClassName('answers')
 				for(var v1=0;v1<answerss.length;v1++)
-					if(answerss[v1].parentNode==els[v].parentNode)
+					if(answerss[v1].parentNode.parentNode.parentNode==els[v].parentNode.parentNode.parentNode)
 					{
 						var aT=""
 						var answersHtmls=document.getElementsByClassName('answerHtml')
-						var answersAwards=document.getElementsByClassName('answerAward')
+						var answersPoints=document.getElementsByClassName('answerPoints')
 						var answersCount=0
 						for(var v2=0;v2<answersHtmls.length;v2++)
-							if(answersHtmls[v2].parentNode.parentNode==answerss[v1])
+						{
+							console.log(answersHtmls[v2])
+							console.log(answerss[v1])
+							console.log(answersHtmls[v2].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)
+							if(answersHtmls[v2].parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode==answerss[v1])
 							{
-								aT+=(answersCount!=0?',\n':'')+'\t\t\t\t{\n\t\t\t\t\t"html" : "'+answersHtmls[v2].value+'",\n\t\t\t\t\t"award" : '+ifNanThanZero(Number.parseFloat(answersAwards[v2].value))+'\n\t\t\t\t}'
+								aT+=(answersCount!=0?',\n':'')+'\t\t\t\t{\n\t\t\t\t\t"html" : "'+answersHtmls[v2].value+'",\n\t\t\t\t\t"points" : '+ifNanThanDefault(Number.parseFloat(answersPoints[v2].value),0)+'\n\t\t\t\t}'
 								answersCount++
 							}
+						}
 						val2+=aT
 					}
 				qT+=qqT.replace('%1',val2)
@@ -87,22 +102,59 @@ block content
 		}
 		function addAnswer(th)
 		{
-			var answer=document.createElement('div')
-			answer.style["padding-left"]="50px"
-			answer.innerHTML="<label>HTML: </label><input type='text' class='answerHtml' oninput='updateCode()'/><input type='number' class='answerAward' oninput='updateCode()'/>"
+			var answer=document.createElement('tr')
 			var answersEls=document.getElementsByClassName('answers')
 			for(var v=0;v<answersEls.length;v++)
 				if(answersEls[v].parentNode===th.parentNode)
 					answersEls[v].appendChild(answer)
+			answer.outerHTML=answerHtmlPatternHTML
 		}
 		function addQuestion(th)
 		{
-			var question=document.createElement('div')
-			question.style["padding-left"]="50px"
-			question.innerHTML="<select class='questionType' oninput='updateCode()'><option>chooseOne</option><option>enterText</option><option>selectMultiple</option></select><label>HTML: </label><input type='text' class='questionHtml' oninput='updateCode()'/><div class='answers'></div><button onclick='addAnswer(this)'>Add answer</button>"
+			var question=document.createElement('tr')
 			var questionsEls=document.getElementsByClassName('questions')
 			for(var v=0;v<questionsEls.length;v++)
 				if(questionsEls[v].parentNode===th.parentNode)
 					questionsEls[v].appendChild(question)
+			question.outerHTML=questionHtmlPatternHTML
 		}
-	button(onclick="addQuestion(this)") Add question
+	table.tableWith10pxBorder
+		tr#answerHtmlPattern
+			td #{getMsg('answer')}
+			td.elementWithLeftBorder
+				table.tableWith10pxBorder
+					tr
+						td #{getMsg('html')}
+						td.elementWithLeftBorder
+							input.answerHtml(type='text' oninput='updateCode()')
+					tr
+						td #{getMsg('points')}
+						td.elementWithLeftBorder
+							input.answerPoints(type='number' oninput='updateCode()')
+		tr#questionHtmlPattern
+			td #{getMsg('question')}
+			td.elementWithLeftBorder
+				table.tableWith10pxBorder
+					tr
+						td #{getMsg('type')}
+						td.elementWithLeftBorder
+							select.questionType(oninput='updateCode()')
+								option(value="chooseOne") #{getMsg('chooseOne')}
+								option(value="enterText") #{getMsg('enterText')}
+								option(value="selectMultiple") #{getMsg('selectMultiple')}
+					tr
+						td #{getMsg('minPointsLimit')}
+						td.elementWithLeftBorder
+							input.questionMinPointsLimit(type='text' oninput='updateCode()')
+					tr
+						td #{getMsg('html')}
+						td.elementWithLeftBorder
+							input.questionHtml(type='text' oninput='updateCode()')
+					tr
+						td #{getMsg('answers')}
+						td.elementWithLeftBorder
+							table.answers.tableWith10pxBorder
+							button(onclick='addAnswer(this)') #{getMsg('addAnswer')}
+	script.
+		var questionHtmlPatternHTML=document.getElementById('questionHtmlPattern').outerHTML;document.getElementById('questionHtmlPattern').outerHTML=""
+		var answerHtmlPatternHTML=document.getElementById('answerHtmlPattern').outerHTML;document.getElementById('answerHtmlPattern').outerHTML=""
